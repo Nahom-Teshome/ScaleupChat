@@ -10,7 +10,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
     React.useEffect(()=>{
         const getMyRooms=async()=>{
             try{
-                const res = await fetch('/api/room/getmyrooms',{
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/room/getmyrooms`,{
                     method:'GET',
                     credentials:'include'
                 })
