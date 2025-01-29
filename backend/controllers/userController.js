@@ -23,7 +23,8 @@ async function userSignup(req,res){
         res.cookie('authCookie',token,{
                  httpOnly:true,//no javascript manipulationddd
                  secure: process.env.NODE_ENV === 'production', //for production 
-                 sameSite:'lax', // must be accessed only when request comes from the same path
+                 sameSite:"none", // must be accessed only when request comes from the same path
+                 domain:".onrender.com",
                  maxAge:(60000 * 60 *24)// expiry date for 1 day 60000seconds * 60 * 24
              })
              // below we send back the user object with necessary data
@@ -52,7 +53,8 @@ async function userLogin(req,res){
         res.cookie('authCookie',token,{
                 httpOnly:true,
                  secure: process.env.NODE_ENV === 'production', 
-                 sameSite:'lax',
+                 sameSite:"none",
+                 domain:".onrender.com",
                maxAge:(60000 * 60 *24)
              })
             //Sending  positive response along with the "user " object
