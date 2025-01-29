@@ -20,7 +20,7 @@ export default function LastMessageContextProvider({children}){
     useEffect(()=>{
         const getLastMessages =async()=>{
             try{
-                const res = await fetch('/api/message/receive/lastmessages',{
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/lastmessages`,{
                     method:'GET',
                     credentials:'include'
                 })
