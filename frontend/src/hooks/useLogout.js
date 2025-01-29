@@ -12,7 +12,7 @@ export function useLogout(){
             console.log(" socket.id ", socket.id)
             socket.disconnect()
             socketDispatch({type:'DISCONNECT'})
-            const res = await fetch('/api/user/logout',{
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/logout`,{
                 method:'POST',
                 credentials:'include'
             })
