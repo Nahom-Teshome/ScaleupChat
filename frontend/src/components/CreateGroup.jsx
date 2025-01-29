@@ -1,4 +1,5 @@
 import React from 'react'
+import {useUserContext} from '../hooks/useUserContext'
 // import { useRoomIdContext } from '../hooks/useRoomIdContext'
 
 export default function CreateGroup(){
@@ -6,6 +7,7 @@ export default function CreateGroup(){
     const [participants, setParticipants] = React.useState([])
     const [group, setGroup] = React.useState({groupName:''})
     const [usersGroups, setUsersGroups] = React.useState([])
+    const{user} = useUserContext()
     // const {roomId,dispatch} = useRoomIdContext()
     React.useEffect(()=>{
 
@@ -27,7 +29,9 @@ export default function CreateGroup(){
                 console.log("Error in Group.getUsers():", err.Error)
             }
         }
-        getUsers()
+        if(user){
+            getUsers()
+        }
     },[])
 
     React.useEffect(()=>{
@@ -52,7 +56,9 @@ export default function CreateGroup(){
                 console.log("Error in Group.getMyRooms(): ", err.Error)
             }
         }
-        getMyRooms()
+        if(user){
+            getMyRooms()
+        }
         console.log("groups : ",usersGroups)
     },[])
     const handleChange= (e)=>{

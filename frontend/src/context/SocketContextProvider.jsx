@@ -47,8 +47,9 @@ export default function SocketContextProvider({children}){
             }
         }
        
-
+        if(user){
             connect()
+        }
     
     },[user])
     return(

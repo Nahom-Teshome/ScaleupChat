@@ -43,7 +43,9 @@ export default function LastMessageContextProvider({children}){
                 console.log('Error in getAllMessages: ',err)
             }
         }
-        getLastMessages()
+        if(user){
+            getLastMessages()
+        }
       
     },[user])
     return(

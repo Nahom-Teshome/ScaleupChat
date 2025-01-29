@@ -60,7 +60,9 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
                 console.log("Error in getMyUsers: ",err.Error)
             }
         }
-        getMyUsers()
+        if(user){
+            getMyUsers()
+        }
     },[])
 
     React.useEffect(()=>{
