@@ -50,7 +50,7 @@ io.on('connection', initializeSocket)
 
 
 const port=process.env.PORT || 3000
-server.listen(port, () => {
+server.listen(port,0.0.0.0, () => {
     mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
     .then(()=>{
         console.log('Connected to MONGO and listening on port: ',port)
