@@ -24,7 +24,7 @@ import { BsPaperclip } from "react-icons/bs";
   const [newFile ,setNewFile] = React.useState(null)//array because the file field in Db is an[]
   const fileInputRef = React.useRef(null)
   const newSocket = socket
-  
+  console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
   React.useEffect(()=>{
     // console.log("Socket Connection useEffect")
     // const newSocket =io("http://localhost:300", {
