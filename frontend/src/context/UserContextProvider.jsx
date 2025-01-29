@@ -21,7 +21,7 @@ import React, { createContext , useReducer} from 'react'
             const fetchUser = async()=>{
                 try{
 
-                        const res = await fetch('/api/user/currentuser',{
+                        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/currentuser`,{
                             method:'GET',
                             credentials:'include'
                         })
