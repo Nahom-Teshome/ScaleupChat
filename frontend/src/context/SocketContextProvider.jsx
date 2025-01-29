@@ -26,7 +26,7 @@ export default function SocketContextProvider({children}){
     // console.log('SocketContext UseEffect')
         const connect=async()=>{
             try{
-                const newSocket =  io("http://192.168.39.47:3000",{//convert to localhost after
+                const newSocket =  io(import.meta.env.VITE_API_URL,{//convert to localhost after
                     transports:["websocket"]
                 })
 // console.log("SocketContext newSocket: ",newSocket)
