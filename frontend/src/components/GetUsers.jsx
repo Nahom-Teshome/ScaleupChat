@@ -12,7 +12,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
     React.useEffect(()=>{
         const getLastMessages =async()=>{
             try{
-                const res = await fetch('/api/message/receive/lastmessages',{
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/lastmessages`,{
                     method:'GET',
                     credentials:'include'
                 })
@@ -42,7 +42,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
     React.useEffect(()=>{
         const getMyUsers=async()=>{
             try{
-                const res = await fetch('/api/user/myusers',{
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/myusers`,{
                     method:'GET',
                     credentials:'include'
                 })
