@@ -13,12 +13,13 @@ const server = http.createServer(app)
 const cors = require('cors')
 const auth = require("./middleware/Auth")
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.ALLOWED_ORIGIN,
     credentials:true,  // Allow requests only from this origin
 }));
 const  io = new Server(server,{
     cors:{
-        origin:"http://localhost:5173", // Allow connections from your development server
+        origin:process.env.ALLOWED_ORIGIN, // Allow connections from your development server
+        // origin:"http://localhost:5173", // Allow connections from your development server
         methods: ["GET", "POST"],
         credentials: true,
     }
