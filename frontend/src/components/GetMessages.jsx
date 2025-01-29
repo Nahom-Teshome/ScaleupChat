@@ -17,7 +17,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                     setMessages([])
                     console.log("SelectedUserID iN GETmESSAGES ", selectedUserID.id)
                     
-                    const res = await fetch(`/api/message/receive/one2one/${selectedUserID.id}`,{
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/one2one/${selectedUserID.id}`,{
                         method:'GET',
                         credentials:'include'
                     })
@@ -55,7 +55,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                    
                     console.log("SelectedRoomID iN GETmESSAGES ",roomID)
                     
-                    const res = await fetch(`/api/message/receive/group/${roomID}`,{
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/group/${roomID}`,{
                         method:'GET',
                         credentials:'include'
                     })
