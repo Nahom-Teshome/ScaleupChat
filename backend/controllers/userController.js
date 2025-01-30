@@ -24,8 +24,8 @@ async function userSignup(req,res){
                  httpOnly:true,//no javascript manipulationddd
                  secure: true, //for production 
                  sameSite:"none", // must be accessed only when request comes from the same path
-                 path:'/',
-                 domain:".onrender.com",
+                 path:"/",
+                //  domain:".onrender.com",
                  maxAge:(60000 * 60 *24)// expiry date for 1 day 60000seconds * 60 * 24
              })
              // below we send back the user object with necessary data
@@ -55,8 +55,8 @@ async function userLogin(req,res){
                 httpOnly:true,
                  secure:true, 
                  sameSite:"none",
-                 domain:".onrender.com",
-                 path:'/',
+                //  domain:".onrender.com",
+                 path:"/",
                maxAge:(60000 * 60 *24)
              })
        
