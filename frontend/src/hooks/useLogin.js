@@ -1,11 +1,13 @@
 import { useUserContext } from "./useUserContext";
 import {useSocketContext} from './useSocketContext'
+import {useNavigate} from 'react-router-dom'
 import React from 'react'
 export function useLogin(){
     
     const {dispatch} = useUserContext()
     const {dispatch:socketDispatch,socket} = useSocketContext()
     const [error,setError] =React.useState(null)
+    const navigate = useNavigate()
     const login= async(email,password)=>
         {
 
@@ -32,6 +34,8 @@ export function useLogin(){
                         console.log("list of online users in useLogin: ", arg)
                         socketDispatch({type:'ADD_ONLINE_USER',payload:arg})
                     })
+                    navigate('/chat')
+                    
                 }
                 catch(err)
                 {
