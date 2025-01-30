@@ -128,7 +128,7 @@ console.log('inside cloudinaryUpload')
             const sendMessage=async(e)=>{
               e.preventDefault()
               
-            setNewMessage(message)
+           
    
             
            
@@ -139,6 +139,7 @@ console.log('inside cloudinaryUpload')
             file&&console.log("Cloudinary data fileInfo: ", fileInfo)
             file&&console.log("Cloudinary data fileInfo: ", fileInfo.secure_url)
             setNewFile( fileInfo)
+
             const fileMessage = fileInfo&& {
               public_id:fileInfo.public_id,
               secure_url:fileInfo.secure_url,
@@ -150,6 +151,7 @@ console.log('inside cloudinaryUpload')
           if(file || message){
             if(socket && selectedUser.id)
             {
+              setNewMessage(message)
               socket.emit('sendMessage',{senderId:user._id,receiverId:selectedUser.id, content: message ,roomId,file:fileMessage?fileMessage:null})
               setMessage('')
               if(fileInputRef.current){//clearing the file selector
