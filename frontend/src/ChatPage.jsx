@@ -148,7 +148,7 @@ console.log('inside cloudinaryUpload')
               bytes:fileInfo.bytes
             }
           if(file || message){
-            if(socket)
+            if(socket && selectedUser.id)
             {
               socket.emit('sendMessage',{senderId:user._id,receiverId:selectedUser.id, content: message ,roomId,file:fileMessage?fileMessage:null})
               setMessage('')
@@ -157,6 +157,9 @@ console.log('inside cloudinaryUpload')
                 fileInputRef.current.value = ''
                }
               setFile('')
+            }
+            else{
+              console.log("must select room or User","socket connection?: ",socket?socket:"no socket connection")
             }
           }
           else{
