@@ -3,7 +3,8 @@ import React from 'react'
 import { useUserContext } from '../hooks/useUserContext'
 // import { useSocketContext } from '../hooks/useSocketContext'
 import { useLastMessageContext } from '../hooks/useLastMessageContext'
-export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessage,receivedMessage}){
+export default function GetUsers({fetchMessages,selectedUser,isOnline,receivedMessage}){
+    // ,sentMessage.//temporary remove of sentmessages until lastMessagesContext is set at login b/c it causes errors
     const [users,setUsers] =React.useState(null)
     const {user} = useUserContext()
     const [lastMessages,setLastMessages] = React.useState([])
@@ -67,14 +68,14 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
 
     React.useEffect(()=>{
         if(sentMessage){
-
+console.log("sentMessage in getUsers: ",sentMessage)
             setLastMessages((prev)=>{
                 const newLastMessage = prev.map(last =>{ 
                     return last.sender_id===user._id && last.receiver_id ===selectedUser ||
                            last.receiver_id===user._id && last.sender_id ===selectedUser  ?
                     {content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString()}:last
                     })
-                    // console.log("The new LAST message: ", newLastMessage)
+                    console.log("The new LAST message: ", newLastMessage)
                  return newLastMessage
             })
         }
