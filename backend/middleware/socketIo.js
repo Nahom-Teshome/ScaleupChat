@@ -70,7 +70,7 @@ module.exports =(socket)=>{
                 // socket.user_id ="6773e68710454a240aad1f00"
             }
         catch(err){
-            console.log("no auth cookie sent ")
+            console.log("no auth cookie sent in socket ")
             socket.emit('error',{message:"auth token not found"})
             socket.disconnect()
         }

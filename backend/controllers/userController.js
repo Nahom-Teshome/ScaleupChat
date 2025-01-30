@@ -166,7 +166,7 @@ async function getMyUsers(req,res){
     
                 users.add(messages.sender_id)
                 users.add(messages.receiver_id )
-            })// i add the both the sender_id and receiver_id to a set to avoid duplicates and that gives me the users the logged-in user has been talking to. I can use those id's to get the conversation between the two and fetch the last messages but right now i will get the users
+            })// i add the both the sender_id and receiver_id to a Set to avoid duplicates and that gives me the users the logged-in user has been talking to. I can use those id's to get the conversation between the two and fetch the last messages but right now i will get the users
 
             const userIds = [...users]//since "users" is a SET i can't loop over it hence why it is spread into an array
             const myUsers =[]
