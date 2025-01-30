@@ -24,6 +24,7 @@ async function userSignup(req,res){
                  httpOnly:true,//no javascript manipulationddd
                  secure: true, //for production 
                  sameSite:"none", // must be accessed only when request comes from the same path
+                 path:'/',
                  domain:".onrender.com",
                  maxAge:(60000 * 60 *24)// expiry date for 1 day 60000seconds * 60 * 24
              })
@@ -50,14 +51,15 @@ async function userLogin(req,res){
             // create token
         const token = createToken(user._id,user.role)
             //sending cookie named "authCookie" which contains the TOKEN we created above ,to the frontend
-       const cook=  res.cookie('authCookie',token,{
+        res.cookie('authCookie',token,{
                 httpOnly:true,
                  secure:true, 
                  sameSite:"none",
                  domain:".onrender.com",
+                 path:'/',
                maxAge:(60000 * 60 *24)
              })
-        console.log("cookies sent : ", cook)
+       
             //Sending  positive response along with the "user " object
         res.status(200).json({user,message:"Logging In"})
     }

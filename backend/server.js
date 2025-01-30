@@ -15,8 +15,8 @@ const auth = require("./middleware/Auth")
         const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173"]
 app.use(cors({
     // origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
-    origin: allowedOrigin,
-    credentials:true,  // Allow requests only from this origin
+    origin: allowedOrigin,// Allow requests only from this origin
+    credentials:true,  
     allowedHeaders :['content-type','Authorization'],
     methods: ["GET", "POST"],
 }));
@@ -27,7 +27,7 @@ const  io = new Server(server,{
         origin:allowedOrigin,
         methods: ["GET", "POST"],
         credentials: true,
-        allowedHeaders:[]
+        allowedHeaders:['content-type','Authorization']
     }
 })
 
@@ -37,9 +37,9 @@ app.use(cookieParser())// parses incoming cookie data
 //     // req.io = io
 //     next()
 // })
-app.get('/', (req, res) => {
-    console.log('Mobile Request')
-})
+// app.get('/', (req, res) => {
+//     console.log('Mobile Request')
+// })
 // io.on('connection ',(socket) => {
 //         console.log("User connected ",socket.id);
        
