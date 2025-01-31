@@ -29,7 +29,9 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                 console.log("Error in Group.getMyRooms(): ", err.Error)
             }
         }
-        getMyRooms()
+        if(user){
+            getMyRooms()
+        }
         
 // console.log("groups : ",groups)
     },[])
