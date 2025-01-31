@@ -38,7 +38,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
     React.useEffect(()=>{
         console.log("last Message in GetGroup: ",lastMessage)
         setLastMessages(lastMessage)
-    },[lastMessage,user])
+    },[lastMessage])
 
     React.useEffect(()=>{
 console.log("sent message in gerGroups: ",sentMessage)

@@ -67,7 +67,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
     },[])
 const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
-        if(sentMessage && negative){
+        if(sentMessage ){
 console.log("sentMessage in getUsers: ",sentMessage)
             setLastMessages((prev)=>{
                 const newLastMessage = prev.map(last =>{ 
@@ -83,7 +83,7 @@ console.log("sentMessage in getUsers: ",sentMessage)
     },[sentMessage])
     React.useEffect(()=>{
     //   ||last.sender_id===user._id && last.receiver_id ===selectedUser
-        if(receivedMessage && negative){
+        if(receivedMessage ){
 
             setLastMessages((prev)=>{
             const newLastMessage = prev.map(last =>{

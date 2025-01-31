@@ -65,8 +65,9 @@ input:focus{
 .chat-header{
   background-color: rgb(255, 255, 255);
   margin: 0;
-  height: 12%;
-  border-bottom: 2px solid rgb(205, 203, 203);
+  height: 11.6%;
+  /* border-bottom: 1px solid rgb(205, 203, 203); */
+  border-bottom: 1px solid rgb(196, 193, 193);
   display: flex;
   justify-content:space-between ;
   align-items: center;
@@ -97,7 +98,8 @@ input:focus{
   font-style:oblique;
 }
 .profile-card{
-  background:rgb(205, 63, 82);
+  /* background:rgb(205, 63, 82); */
+  background:rgb(64, 148, 197);
   height: 3.5rem;
   width: 3.5rem;
   min-width: 3.5rem;

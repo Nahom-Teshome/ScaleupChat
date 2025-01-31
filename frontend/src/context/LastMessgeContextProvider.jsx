@@ -3,7 +3,8 @@ import { useUserContext } from '../hooks/useUserContext'
     export const LastMessageContext = createContext()
 
 
-    export const lastMessageReducer =(action,state)=>{
+    export const lastMessageReducer =(action,state )=>{
+        console.log("LastMessageReducer called from : ", action.Location)
         switch(action.type){
             case 'LOAD':
                 return {lastMessage:action.payload}

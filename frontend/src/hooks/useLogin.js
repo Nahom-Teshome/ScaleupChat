@@ -2,11 +2,14 @@ import { useUserContext } from "./useUserContext";
 import {useSocketContext} from './useSocketContext'
 import {useNavigate} from 'react-router-dom'
 import React from 'react'
+import { useLastMessageContext } from "./useLastMessageContext";
+
 export function useLogin(){
     
     const {dispatch} = useUserContext()
     const {dispatch:socketDispatch,socket} = useSocketContext()
     const [error,setError] =React.useState(null)
+    const {dispatch:lastMessageDispatch} = useLastMessageContext()
     const navigate = useNavigate()
     const login= async(email,password)=>
         {
@@ -25,10 +28,11 @@ export function useLogin(){
                         setError(dataError.Error)
                         console.log(dataError.Error)
                     throw new Error(dataError.Error)
-                    }
-                    const data=await  res.json()
-                    console.log("Login Successful, data: ", data )
+                }
+                const data=await  res.json()
+                console.log("Login Successful, data: ", data )
                     dispatch({type:"LOGIN",payload:data.user})
+                   await getLastMessages()
                     // setCurrentUser(data.user)
                     socket.on('online',(arg)=>{
                         console.log("list of online users in useLogin: ", arg)
@@ -43,5 +47,32 @@ export function useLogin(){
                 }
          }
          
+                const getLastMessages =async()=>{
+                    try{
+                        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/lastmessages`,{
+                            method:'GET',
+                            credentials:'include'
+                        })
+                        
+                        if(!res.ok){
+                            const errorData = await res.json()
+                            console.log('Error in !res.ok: ',errorData)
+                            throw Error(errorData)
+                        }
+                        console.log("Getting all data success!!!")
+                        const data = await res.json()
+                
+                
+                
+                
+                        console.log("last Messages: ",data)
+                    lastMessageDispatch({type:"LOAD",payload:data.lastMessages,Location:" log"})
+                        console.log("last Message Dispatch fired from Use LOGIN :")
+                    }
+                    catch(err){
+                        console.log('Error in getAllMessages: ',err)
+                    }
+                }
          return {login,error}
-}
+        }
+

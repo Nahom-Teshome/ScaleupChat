@@ -42,7 +42,7 @@ import React, { createContext , useReducer} from 'react'
                         console.log("Error from userContext useEffect: ",err)
                     }
             }
-                // fetchUser()//  todo: for the timebeing
+                fetchUser()//  todo: comment out for the timebeing
         //  console.log("useEffect: ","User REGISTERED: ",state.user)
             
         },[])

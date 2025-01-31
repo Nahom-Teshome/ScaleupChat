@@ -249,7 +249,7 @@ console.log('inside cloudinaryUpload')
             <div className="chat-container">
               <div className="chat-header"> 
             
-                { <div className="user-info">
+                {selectedUser.id && <div className="user-info">
                       <ProfileCard> 
                         <h4 className="username-initial">
                                {selectedUser.groupName?selectedUser.groupName[0]:selectedUser.name.map(n=>n[0])}
@@ -298,7 +298,7 @@ console.log('inside cloudinaryUpload')
 
                 </div>
 
-                 {selectedUser&&  <form className="chat-form" action="">
+                 {selectedUser.id &&  <form className="chat-form" action="">
                     <div className="chat-input-wrapper">
                         <input className="chat-input" type="text"
                                 id="text"
