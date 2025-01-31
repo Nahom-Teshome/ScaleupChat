@@ -298,7 +298,7 @@ console.log('inside cloudinaryUpload')
 
                 </div>
 
-                 {user&&  <form className="chat-form" action="">
+                 {selectedUser&&  <form className="chat-form" action="">
                     <div className="chat-input-wrapper">
                         <input className="chat-input" type="text"
                                 id="text"
