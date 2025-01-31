@@ -298,7 +298,7 @@ console.log('inside cloudinaryUpload')
 
                 </div>
 
-                  <form className="chat-form" action="">
+                 {user&&  <form className="chat-form" action="">
                     <div className="chat-input-wrapper">
                         <input className="chat-input" type="text"
                                 id="text"
@@ -315,7 +315,7 @@ console.log('inside cloudinaryUpload')
                                 />
                            <BsPaperclip className='paper-clip'/>
                         <button className="chat-btn" onClick={sendMessage}>Send</button>
-                  </form>
+                  </form>}
 
             </div>
            {moreClicked&& 
