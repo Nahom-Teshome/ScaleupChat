@@ -84,6 +84,7 @@ input:focus{
   min-width:35% ;
   max-height: 100%;
   height:100%;
+  position:relative
 }
 .chat-header{
   background-color: rgb(255, 255, 255);
@@ -323,17 +324,17 @@ input:focus{
 }
 
 .chat-wrapper{
-  /* background-color: rgb(233, 233, 233);  */
+  /* background-color: rgb(167, 51, 51);  */
   background-color: rgb(253, 253, 253); 
   overflow-y: scroll;
   scrollbar-width:none;
   min-height: 70%;
-  height: 75%;
+  height: 86%;
   margin: 0;
   display: flex;
   flex-direction: column-reverse;
   gap: 1rem ;
-  padding-bottom: .5rem;
+  padding-bottom: 8%;
   width: 100%;
   position: relative;
 }
@@ -353,14 +354,15 @@ input:focus{
 .chat-form{
   display: flex;
   margin:0;
-  height: 15%;
-  background-color: rgb(58, 31, 31);
-  background-color:rgb(233, 233, 233); 
-
+  height: 12%;
+  width: 100%;
+  /* background-color: rgb(58, 31, 31); */
+  background-color:transparent;
   align-items: center;
   justify-content: center;
   margin: 0 ;
-  position: relative;
+  position: absolute;
+  bottom: 0;
   /* border-radius: .5rem; */
 }
 .chat-btn{
@@ -380,20 +382,22 @@ input:focus{
 .chat-input{
   height: 97%;
   border:none;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(211, 225, 231);
   width: 85%;
   border-radius: 5rem;
+  opacity: 1;
   /* text-indent: 5rem; */
 }
 .chat-input-wrapper{
   height: 70%;
   border:none;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(211, 225, 231);
   width: 90%;
   border-radius: 5rem;
   text-indent: 5rem;
   display: flex;
   justify-content: center;
+  opacity: .95;
 }
 .file-input{
   position: absolute;
