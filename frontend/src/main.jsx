@@ -15,5 +15,5 @@ createRoot(document.getElementById('root')).render(
         </LastMessageContextProvider>
       </SocketContextProvider>
     </UserContextProvider>
-  </StrictMode>,
+  </StrictMode>
 )

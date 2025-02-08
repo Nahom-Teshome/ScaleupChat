@@ -1,8 +1,9 @@
 import React from 'react'
 import {useLastMessageContext} from '../hooks/useLastMessageContext'
 import { useUserContext } from '../hooks/useUserContext'
+import ProfileCard from './ProfileCard'
 
-export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage}){
+export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage,sentFiles}){
     const [groups,setGroups] = React.useState([])
     const [lastMessages,setLastMessages] = React.useState()
     const {user}= useUserContext()
@@ -21,7 +22,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                 }
 
                 const data = await res.json()
-    // console.log("Groupj Fetch was Successfull: ", data)
+    console.log("Groupj Fetch was Successfull: ", data)
                 setGroups(data.rooms)
                 
                 }
@@ -45,12 +46,12 @@ console.log("sent message in gerGroups: ",sentMessage)
 
         lastMessages && setLastMessages((prev)=>{
             const newLastMessage= prev.map(last=>{
-               return  last.room_id === selectedGroup ? {content:sentMessage,room_id:selectedGroup,sender_id:user._id,createdAt:new Date().toISOString()}: last
+               return  last.room_id === selectedGroup ? {content:sentMessage,room_id:selectedGroup,sender_id:user._id,createdAt:new Date().toISOString(),files:[sentFiles]}: last
                 })
             return newLastMessage
             })
         
-    },[sentMessage])
+    },[sentMessage,sentFiles])
     React.useEffect(()=>{
 console.log("received message in geTGroups: ",receivedMessage)
 
@@ -91,23 +92,28 @@ console.log("received message in geTGroups: ",receivedMessage)
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
-                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name))}}
+                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl)}}
                         >
+                            <ProfileCard classname="user-list-profile">
+                                <img className="profilePic-img" src={group.imageUrl} alt="" />
+                            </ProfileCard>
+
                             <div className='group-info user_info'>
                                 <h4>{upperCasing(group.room_name)}</h4>
+                                <div className="user-latest-message group-latest-message">
+                                 {
+                                    lastMessages && lastMessages.map((last,i) =>{
+                                            const time = convertToDate(last.createdAt)
+                                                        return last.receiver_id===group.room_id ?
+                                                        <div  key={i}className="latest-message-wrapper">
+                                                            <p>{last.content?last.content:last.files[0].resource_type}</p>
+                                                            <p className='time'>{time }</p>
+                                                        </div>:null
+                                                    })
+                                 }
                             </div>
-                            <div className="user-latest-message group-latest-message">
-                                {
-                    lastMessages && lastMessages.map((last,i) =>{
-                            const time = convertToDate(last.createdAt)
-                                        return last.receiver_id===group.room_id ?
-                                        <div  key={i}className="latest-message-wrapper">
-                                            <p>{last.content}</p>
-                                            <p className='time'>{time }</p>
-                                        </div>:null
-                                     })
-                                    }
                             </div>
+                           
                             </button>)})
                   }
         </>

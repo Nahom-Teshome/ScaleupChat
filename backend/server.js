@@ -12,20 +12,20 @@ const {Server} = require('socket.io')
 const server = http.createServer(app)
 const cors = require('cors')
 const auth = require("./middleware/Auth")
-        const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173"]
+        const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173","http://192.168.39.47:5173"]
 app.use(cors({
     // origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
     origin: allowedOrigin,// Allow requests only from this origin
     credentials:true,  
     allowedHeaders :['content-type','Authorization'],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST","PATCH"],
 }));
 const  io = new Server(server,{
     cors:{
     //    origin:process.env.ALLOWED_ORIGIN?.split(',') ||[], // Allow connections from your production server
         // origin:"http://localhost:5173", // Allow connections from your development server
         origin:allowedOrigin,
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST","PATCH"],
         credentials: true,
         allowedHeaders:['content-type','Authorization']
     }

@@ -8,6 +8,9 @@ import GetUsers from './components/GetUsers'
 import GetMessages from './components/GetMessages'
 import { useSocketContext } from './hooks/useSocketContext'
 import { BsPaperclip } from "react-icons/bs";
+import { IoChevronBack } from "react-icons/io5";
+import { FaLocationArrow } from "react-icons/fa";
+
  function ChatPage(){
   // const [isConnected, setIsConnected] = React.useState(false)
   const [message, setMessage] = React.useState(null)
@@ -17,9 +20,10 @@ import { BsPaperclip } from "react-icons/bs";
   const [selectedUser,setSelectedUser] = React.useState({id:null,name:[]})
   const [roomId, setRoomId] = React.useState(null)
   const [moreClicked,setMoreClicked] = React.useState(false)
+  const [profileForm, setProfileForm] = React.useState(false)
   const {user} = useUserContext()
   const {socket,onlineUsers} = useSocketContext()
-  const [typing, setTyping] = React.useState(false)
+  // const [typing, setTyping] = React.useState(false)
   const [noOfOnlineUsers,setNoOfOnlineUsers] = React.useState(0)
   const [newFile ,setNewFile] = React.useState(null)//array because the file field in Db is an[]
   const fileInputRef = React.useRef(null)
@@ -102,7 +106,7 @@ console.log("online users in chat : ", onlineUsers)
               
             },[onlineUsers,selectedUser])
             
-            console.log(".env files",import.meta.env.VITE_CLOUDNAME)
+            // console.log(".env files",import.meta.env.VITE_CLOUDNAME)
             const cloudinaryUpload= async(file)=>{
 console.log('inside cloudinaryUpload')
               const formData = new FormData()
@@ -169,26 +173,26 @@ console.log('inside cloudinaryUpload')
           }
         }
         // console.log("REceivedmessages: ", receivedMessage)
-        const getSelectedUserId =(id,name)=>{
+        const getSelectedUserId =(id,name,imageUrl)=>{
           setNewFile(null)
     // console.log("ID OF SELECTED uSER: ",id, 'name ', name)
           if(socket){
       // console.log("joining Own room")
             socket.emit('joinRoom')
           }
-          setSelectedUser({name:[name],id})//passing name as an array bc in room participants name is an array and i have to map through it
+          setSelectedUser({name:[name],id,imageUrl})//passing name as an array bc in room participants name is an array and i have to map through it
           setRoomId(null)
           
         }
-          const getRoomId=(id,participants,groupName)=>{
+          const getRoomId=(id,participants,groupName,groupImageUrl)=>{
             setNewFile(null)//so that old files are overwritten when a new  group is selected
             setRoomId(id)
             if(socket){
       //  console.log("joining Group Room")
               socket.emit('joinRoom',id)
             }
-            const members = participants.map(participant =>({name:upperCasing(participant.name),id:participant.id}))
-            setSelectedUser({name:members,id:id,groupName})
+            const members = participants.map(participant =>({name:upperCasing(participant.name),id:participant.id,imageUrl:participant.imageUrl}))
+            setSelectedUser({name:members,id:id,groupName,imageUrl:groupImageUrl})
           
             console.log("Room id IN CHAT: ",id , 'SelectedUserId set to group id')
           }
@@ -211,19 +215,25 @@ console.log('inside cloudinaryUpload')
           //   setTyping(true)
           //   console.log("TYPING")
           // }
-// console.log("Typing state: ", typing)
+console.log("Current LOGGED IN USER: ", user)
        
   return (
         <div className="main-container">
             <div className="users-container">
-              {user && <div className="active-user">
-                <ProfileCard>
+              {user && <div  className="active-user">
+                <ProfileCard 
+                   userId={user._id}//only if the user._id matches with the logged in user or only if it is sent will user be able to update image
+                   >
                 { (user&& onlineUsers)?
                                           <div 
                                             className={onlineUsers.includes(user._id)? 'user_online online-info':'user_offline offline-info'}>
                                           </div>:null
                                           }
-                 <h4 className="username-initial">{user.name[0].toUpperCase()}</h4>
+                                           <img className="profilePic-img"src={user.imageUrl} alt={user.name[0].toUpperCase()} />
+                 <h4 className="username-initial">
+                  {/* {user.name[0].toUpperCase()} */}
+                                          
+                 </h4>
                 </ProfileCard>
                 <h3 >{upperCasing(user.name)}</h3>    
               </div>}
@@ -234,26 +244,30 @@ console.log('inside cloudinaryUpload')
                                 isOnline={onlineUsers}
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
+                                sentFiles={newFile}
                                 />
 
                       <GetGroups getRoomId={getRoomId}
                                 selectedGroup={selectedUser.id}
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
-                                // latestMessage={latestMessage}
+                                sentFiles={newFile}
                                 />
                     
                 </div>
             </div>
 
             <div className="chat-container">
-              <div className="chat-header"> 
-            
+              {selectedUser.id &&<div className="chat-header"> 
+               
                 {selectedUser.id && <div className="user-info">
+                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]})}}><IoChevronBack /></button>
                       <ProfileCard> 
-                        <h4 className="username-initial">
+                        {/* <h4 className="username-initial">
                                {selectedUser.groupName?selectedUser.groupName[0]:selectedUser.name.map(n=>n[0])}
-                        </h4>
+                        </h4> */}
+                        <img className="profilePic-img"src={selectedUser?.imageUrl} alt={user.name[0].toUpperCase()}
+                        onClick={()=>{selectedUser.groupName && setMoreClicked(prev =>!prev)}} />{/*if inside a groupChat pressing profilePic will display group info*/}
                       </ProfileCard>
                       <div className="chat-header-wrapper">
                         <p className="user-info-name">{selectedUser.groupName?selectedUser.groupName:selectedUser.name[0]}
@@ -284,7 +298,7 @@ console.log('inside cloudinaryUpload')
                                                 </button> }
                                          
                                   
-              </div>
+              </div>}
                 <div className="chat-wrapper">
                 
                     {(selectedUser.id || roomId)? <GetMessages 
@@ -294,7 +308,7 @@ console.log('inside cloudinaryUpload')
                                                   receivedMessage={receivedMessage}
                                                   roomID={roomId}
                                                   />:
-                      <p>Select A user</p>}
+                      <p>Select a user</p>}
 
                 </div>
 
@@ -314,7 +328,7 @@ console.log('inside cloudinaryUpload')
                                 name='file'
                                 />
                            <BsPaperclip className='paper-clip'/>
-                        <button className="chat-btn" onClick={sendMessage}>Send</button>
+                        <button className="chat-btn" onClick={sendMessage}><FaLocationArrow /></button>
                   </form>}
 
             </div>
@@ -323,13 +337,14 @@ console.log('inside cloudinaryUpload')
                <div className="more-group-details-header">
                   <button className="exit-btn"onClick={()=>{setMoreClicked(false)}}>         <RxCross2 />
                   </button>
-                  <h4>Group Members</h4> 
+                  <h4>Group</h4> 
                 </div> 
-              
+               <h5>Group Members</h5>
                  {selectedUser.name.map((user,ind)=>(
                                       <div key={ind} className="user-info user-info-more">
                                             <ProfileCard>
-                                              <h4 className="username-initial">{user.name[0]}</h4>
+                                              {/* <h4 className="username-initial">{user.name[0]}</h4> */}
+                                              <img className="profilePic-img"src={user.imageUrl} alt={user.name[0].toUpperCase()} />
                                               </ProfileCard>
                                           <div className="f">
                                               <p className="user-info-name user-info-more-name">{user.name}</p>
@@ -343,6 +358,9 @@ console.log('inside cloudinaryUpload')
                                           </div>
                                        </div>
                                   )) }
+                <h5>Photos</h5>  
+                <h5>Files</h5>  
+                <h5>Links</h5>  
            </div>}
        </div>
   )

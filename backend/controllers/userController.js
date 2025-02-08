@@ -53,19 +53,49 @@ async function userLogin(req,res){
             //sending cookie named "authCookie" which contains the TOKEN we created above ,to the frontend
         res.cookie('authCookie',token,{
                 httpOnly:true,
-                 secure:true, 
-                 sameSite:"none",
+                //  secure:true, 
+                 sameSite:"lax",//change to none when in production
                 //  domain:".onrender.com",
-                 path:"/",
+                //  path:"/",
                maxAge:(60000 * 60 *24)
              })
-       
+       console.log("userLogin: ",user)
             //Sending  positive response along with the "user " object
         res.status(200).json({user,message:"Logging In"})
     }
     catch(err){
         console.log("login error: ",err.message)
         res.status(400).json({Error:err.message})//catches error and sends them to the frontend 
+    }
+}
+async function updateuser(req,res){
+    const id = req.user
+
+    try{
+        if(!id){
+            console.log("user NOT logged in")
+            throw error("user NOT logged in")
+        }
+
+        const exists = await User.findOne({_id:id})
+        if(!exists){
+            console.log("User not recognized")
+            throw error("User not recognized")
+        }
+
+        const update = await User.updateOne(
+            {_id:id,},
+            {$set:req.body}
+        )
+        if(!update){
+            console.log("update unsuccessfull")
+            throw Error("update unsuccessfull")
+        }
+        console.log("success updating User: ", update)
+        res.status(200).json({message:'Success',update:update})
+    }
+    catch(err){
+        res.status(400).json({Error:err.message})
     }
 }
 
@@ -174,11 +204,11 @@ async function getMyUsers(req,res){
             for(let i = 0 ; i<userIds.length; i++){
                 if(userIds[i] !== undefined){
                     // console.log("user id shouldn't be null or undefined: ",userIds[i])
-                    myUsers.push( await User.findOne({_id:userIds[i]},{_id:1,name:1,email:1,role:1})  )
+                    myUsers.push( await User.findOne({_id:userIds[i]},{_id:1,name:1,email:1,role:1,imageUrl:1})  )
                 }
                 }// the loop allows me to fetch all the users and their specific fields and store it in an array
          
-
+console.log("my users IN GetmyUsers controller : ", myUsers)
             res.status(200).json({message:'Success',myUsers})
         }
         catch(err){
@@ -187,4 +217,4 @@ async function getMyUsers(req,res){
 }
 
 // exporting functions to use them in the routes(message routes)
-module.exports = {userSignup,userLogin,getUsers,getCurrentUser,logout,getMyUsers,users}
+module.exports = {userSignup,userLogin,getUsers,getCurrentUser,logout,getMyUsers,users,updateuser}

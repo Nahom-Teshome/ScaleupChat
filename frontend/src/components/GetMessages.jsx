@@ -86,7 +86,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
 // console.log("Get MESSAGES WAS TRIGGERED: logged in user", user)
        React.useEffect(()=>{
            // displaying the message that current-user sent to self
-           console.log("IN sentMessages useEffect: ", sentFiles)
+           console.log("IN sentMessages useEffect : ","sentFiles", sentFiles, " sentMessages ",sentMessage)
                 setMessages(prev=>{
 
                     return(

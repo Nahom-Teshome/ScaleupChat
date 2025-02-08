@@ -74,7 +74,7 @@ export default function CreateGroup(){
                 console.log("newParticipants value: ", newParticipants)
                 setParticipants(prev=>{
                     return(
-                        [...prev,{id:newParticipants._id, name:newParticipants.name}]
+                        [...prev,{id:newParticipants._id, name:newParticipants.name,imageUrl:newParticipants.imageUrl}]
                     )
                 })
              }    
@@ -86,7 +86,7 @@ export default function CreateGroup(){
 
             console.log("Here are values of Group : ", group, "and participants: ", participants)
                 try{
-                    const res = await fetch('./api/room/create-room',{
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/room/create-room`,{
                         method:"POST",
                         headers:{'Content-Type':'application/json'},
                         body:JSON.stringify({room_name:group.groupName,participants})
@@ -124,6 +124,8 @@ export default function CreateGroup(){
                              id='groupName'
                              onChange={(e)=>{handleChange(e)}}  
                              name='groupName'  />
+                    
+
                     <label htmlFor="participants">Select Participants</label>
                     <select multiple name="participants" id="participants" onChange={(e)=>{handleChange(e)}}>
                      { users.message.map((user,ind)=>{
@@ -133,6 +135,7 @@ export default function CreateGroup(){
                     </select>
                       <button onClick={handleSubmit}>create</button>
                   </form>}
+
                 <div className="groups">
                     {usersGroups.length > 0 && usersGroups.map((grp,ind)=>{
                         return(

@@ -18,6 +18,10 @@ const userSchema = new Schema(
             type:String,
             required:true
         },
+        imageUrl:{
+            type:String,
+            default:'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+        },
         role:{
             type:String,
             default:'user'

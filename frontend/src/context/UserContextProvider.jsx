@@ -1,6 +1,7 @@
 import React, { createContext , useReducer} from 'react'
 
 
+
     export const UserContext = createContext()
     export const userReducer = (state,action)=>{
         switch(action.type){
@@ -8,6 +9,9 @@ import React, { createContext , useReducer} from 'react'
                 return {user:action.payload}
             case 'SIGNUP':
                 return {user:action.payload}
+            case 'UPDATE':
+                console.log("INSIDE USERCONTEXTPROVIDER looking at STATE updated: ",{...state.user,imageUrl:action.payload})
+                return {user:{...state.user,imageUrl:action.payload}}
             case 'LOGOUT':
                 return {user:null}
             default:
