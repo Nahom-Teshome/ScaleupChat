@@ -261,7 +261,7 @@ console.log("Current LOGGED IN USER: ", user)
               {selectedUser.id &&<div className="chat-header"> 
                
                 {selectedUser.id && <div className="user-info">
-                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]})}}><IoChevronBack /></button>
+                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]});setRoomId(null);setMoreClicked(false)}}><IoChevronBack /></button>
                       <ProfileCard> 
                         {/* <h4 className="username-initial">
                                {selectedUser.groupName?selectedUser.groupName[0]:selectedUser.name.map(n=>n[0])}
