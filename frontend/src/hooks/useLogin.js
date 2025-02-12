@@ -63,10 +63,8 @@ export function useLogin(){
                         const data = await res.json()
                 
                 
-                
-                
                         console.log("last Messages: ",data)
-                    lastMessageDispatch({type:"LOAD",payload:data.lastMessages,Location:" log"})
+                    lastMessageDispatch({type:"LOAD",payload:data.lastMessages,Location:" logIn"})
                         console.log("last Message Dispatch fired from Use LOGIN :")
                     }
                     catch(err){

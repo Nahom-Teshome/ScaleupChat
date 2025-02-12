@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom'
     }
     export default function UserContextProvider({children}){
         const [state,dispatch] = useReducer(userReducer,{user:null})
-        const navigate = useNavigate()
+        
         React.useEffect(()=>{
             if(state.user){
                 localStorage.setItem('user',state.user.name)
@@ -46,7 +46,7 @@ import { useNavigate } from 'react-router-dom'
             //  console.log("data from useContext: ", data)
 
                         dispatch({type:'LOGIN',payload:data.user})
-                        navigate('/chat')
+                        
                     }
                     catch(err)
                     {
@@ -55,6 +55,7 @@ import { useNavigate } from 'react-router-dom'
             }
              if(localStorage.getItem('user')){
                 fetchUser()//  todo: comment out for the timebeing
+                
              }
         //  console.log("useEffect: ","User REGISTERED: ",state.user)
             
