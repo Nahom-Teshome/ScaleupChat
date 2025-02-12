@@ -41,7 +41,7 @@ export default function LastMessageContextProvider({children}){
             }
         }
         if(user){
-            // getLastMessages()
+            getLastMessages()
         }
       
     },[user])
