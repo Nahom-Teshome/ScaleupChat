@@ -478,7 +478,7 @@ input:focus{
 }
 .img-content{
   height: auto;
-  width: 100%;
+  width: 12rem;
   display: block;
   object-fit: contain;
   border-radius: 1rem;
@@ -754,17 +754,25 @@ input:focus{
   width: 60%;
 }
 
+@media (max-width:415px) {
+    html{
+      font-size: 12px;
+    }
+}
 @media (max-width:360px){
-    body{
-      font-size: 6px
+    html{
+      font-size: 10px
     }
     .message-name{
-      font-size: 6px;
+      /* font-size: 6px; */
     }
     .profile-card{
       /* min-width: 2rem;
       min-height: 2rem;
       border-radius: .2rem; */
       /* border: 2px solid red; */
+    }
+    .img-content{
+      /* font-size: 1px; */
     }
 }
