@@ -10,7 +10,6 @@ import React, { createContext , useReducer} from 'react'
             case 'SIGNUP':
                 return {user:action.payload}
             case 'UPDATE':
-                console.log("INSIDE USERCONTEXTPROVIDER looking at STATE updated: ",{...state.user,imageUrl:action.payload})
                 return {user:{...state.user,imageUrl:action.payload}}
             case 'LOGOUT':
                 return {user:null}
@@ -46,7 +45,7 @@ import React, { createContext , useReducer} from 'react'
                         console.log("Error from userContext useEffect: ",err)
                     }
             }
-                fetchUser()//  todo: comment out for the timebeing
+                // fetchUser()//  todo: comment out for the timebeing
         //  console.log("useEffect: ","User REGISTERED: ",state.user)
             
         },[])
