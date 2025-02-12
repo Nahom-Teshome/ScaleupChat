@@ -103,8 +103,9 @@ console.log("received message in geTGroups: ",receivedMessage)
                                 <div className="user-latest-message group-latest-message">
                                  {
                                     lastMessages && lastMessages.map((last,i) =>{
+                                        
                                             const time = convertToDate(last.createdAt)
-                                                        return last.room_id===group.room_id ?
+                                                        return last.room_id===group._id ?
                                                         <div  key={i}className="latest-message-wrapper">
                                                             <p>{last.content?last.content:last.files[0].resource_type}</p>
                                                             <p className='time'>{time }</p>
