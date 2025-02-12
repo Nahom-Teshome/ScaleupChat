@@ -536,7 +536,7 @@ input:focus{
   border-right: 1px solid rgb(196, 193, 193);
   overflow-y: scroll;
   scrollbar-width: none;
-  border: 1px solid rgb(218, 32, 206);
+  /* border: 1px solid rgb(218, 32, 206); */
 }
 
 .user-list-container{
