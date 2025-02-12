@@ -107,7 +107,7 @@ userSchema.statics.login = async function(email,password){
             throw Error('Incorrect Password')
         }
             //don't return the password
-        return {name:user.name,email:user.email,role:user.role,_id:user._id}
+        return {name:user.name,email:user.email,role:user.role,_id:user._id,imageUrl:user.imageUrl}
     
 }
 
