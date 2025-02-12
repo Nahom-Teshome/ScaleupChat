@@ -536,6 +536,7 @@ input:focus{
   border-right: 1px solid rgb(196, 193, 193);
   overflow-y: scroll;
   scrollbar-width: none;
+  border: 1px solid rgb(218, 32, 206);
 }
 
 .user-list-container{
@@ -549,7 +550,6 @@ input:focus{
   align-items: center;
 
   justify-content: start;
-  /* border: 2px solid goldenrod; */
 }
 .active-user{  
   background-color: rgb(255, 255, 255);
@@ -756,12 +756,21 @@ input:focus{
 
 @media (max-width:415px) {
     html{
-      font-size: 12px;
+      font-size: 8px;
+    }
+    h1,h2,h3,h4,h5,p,div{
+      font-size: 10px
+    }
+    .profile-card{
+      font-size: 7px;
     }
 }
 @media (max-width:360px){
     html{
       font-size: 10px
+    }
+    h1,h2,h3,h4,h5,p,div{
+      font-size: 5px
     }
     .message-name{
       /* font-size: 6px; */
