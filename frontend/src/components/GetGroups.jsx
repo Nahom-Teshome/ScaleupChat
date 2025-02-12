@@ -36,6 +36,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
         
 // console.log("groups : ",groups)
     },[])
+    
     React.useEffect(()=>{
         console.log("last Message in GetGroup: ",lastMessage)
         setLastMessages(lastMessage)
@@ -102,7 +103,7 @@ console.log("received message in geTGroups: ",receivedMessage)
                                 <h4 className="user-name"> {upperCasing(group.room_name)}</h4>
                                 <div className="user-latest-message group-latest-message">
                                  {
-                                    lastMessages && lastMessages.map((last,i) =>{
+                                    lastMessages ? lastMessages.map((last,i) =>{
 
                                             const time = convertToDate(last.createdAt)
                                                         return last.room_id===group._id ?
@@ -112,7 +113,11 @@ console.log("received message in geTGroups: ",receivedMessage)
                                                             </div>
                                                             <p className='time'>{time }</p>
                                                         </div>:null
-                                                    })
+                                                    }):<div className="latest-message-wrapper">
+                                                          <div className="latest-message-content">
+                                                          <p>...</p>
+                                                          </div>
+                                                    </div>
                                  }
                             </div>
                             </div>

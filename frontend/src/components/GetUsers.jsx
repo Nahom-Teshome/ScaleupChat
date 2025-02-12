@@ -141,7 +141,7 @@ return(// SLOW LOADING ISSUE
                                     <h4 className="user-name">{upperCasing(userI.name)}</h4>
 
                                      <div className='user-latest-message'>{   
-                                         lastMessages   && lastMessages.map((last,i)=>{
+                                         lastMessages  ? lastMessages.map((last,i)=>{
                                             if(last.room_id === undefined || last.room_id === 'client-to-client')//ENSURES that users who are senders don't have room messages previewing
                                                 {
                                                     const time = convertToDate(last.createdAt)
@@ -154,7 +154,11 @@ return(// SLOW LOADING ISSUE
                                                     </div>
                                 
                                                 }
-                                         })   
+                                         })  :<div className="latest-message-wrapper">
+                                         <div className="latest-message-content">
+                                         <p>...</p>
+                                         </div>
+                                   </div> 
                                     }</div>
                                 </div>
                                    

@@ -31,12 +31,8 @@ export default function LastMessageContextProvider({children}){
                     console.log('Error in !res.ok: ',errorData)
                     throw Error(errorData)
                 }
-                console.log("Getting all data success!!!")
+                console.log("Getting all LastMessage data success!!!")
                 const data = await res.json()
-
-
-          
-
                 console.log("last Messages: ",data)
                dispatch({type:"LOAD",payload:data.lastMessages})
             }
