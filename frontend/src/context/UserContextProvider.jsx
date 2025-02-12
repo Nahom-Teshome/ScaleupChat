@@ -19,6 +19,13 @@ import React, { createContext , useReducer} from 'react'
     }
     export default function UserContextProvider({children}){
         const [state,dispatch] = useReducer(userReducer,{user:null})
+
+        React.useEffect(()=>{
+            if(state.user){
+                localStorage.setItem('user',state.user.name)
+                console.log("Local Storage user Set to : ", state.user)
+            }
+        },[state])
         React.useEffect(()=>{
             
             const fetchUser = async()=>{
@@ -45,7 +52,9 @@ import React, { createContext , useReducer} from 'react'
                         console.log("Error from userContext useEffect: ",err)
                     }
             }
-                // fetchUser()//  todo: comment out for the timebeing
+             if(localStorage.getItem('user')){
+                fetchUser()//  todo: comment out for the timebeing
+             }
         //  console.log("useEffect: ","User REGISTERED: ",state.user)
             
         },[])

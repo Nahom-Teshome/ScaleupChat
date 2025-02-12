@@ -99,15 +99,17 @@ console.log("received message in geTGroups: ",receivedMessage)
                             </ProfileCard>
 
                             <div className='group-info user_info'>
-                                <h4>{upperCasing(group.room_name)}</h4>
+                                <h4 className="user-name"> {upperCasing(group.room_name)}</h4>
                                 <div className="user-latest-message group-latest-message">
                                  {
                                     lastMessages && lastMessages.map((last,i) =>{
-                                        
+
                                             const time = convertToDate(last.createdAt)
                                                         return last.room_id===group._id ?
                                                         <div  key={i}className="latest-message-wrapper">
-                                                            <p>{last.content?last.content:last.files[0].resource_type}</p>
+                                                            <div className="latest-message-content">
+                                                                <p>{last.content?last.content.slice(0,30):last.files[0].resource_type}</p>
+                                                            </div>
                                                             <p className='time'>{time }</p>
                                                         </div>:null
                                                     })

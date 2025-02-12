@@ -272,7 +272,7 @@ console.log("Current LOGGED IN USER: ", user)
                         {/* {selectedUser.groupName&&selectedUser.name.map((user)=>{
                           setNoOfOnlineUsers(prev=> prev++)})} */}
                           
-                         {selectedUser.groupName? <div className={noOfOnlineUsers > 1? 'ON':'OFF'}>
+                         {selectedUser.groupName? <div className={noOfOnlineUsers > 0? 'ON':'OFF'}>
                            {noOfOnlineUsers > 0?`${noOfOnlineUsers} ONLINE`:'OFFLINE'}
                        </div>:onlineUsers ?
                         <div 

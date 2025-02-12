@@ -147,7 +147,9 @@ return(// SLOW LOADING ISSUE
                                                     const time = convertToDate(last.createdAt)
                                                     return (last.sender_id === userI._id || last.receiver_id === userI._id) &&
                                                     <div key={i} className='latest-message-wrapper'>
-                                                    <p> {last.content?`${last.content.slice(0,30)} ...`:last.files[0].resource_type} </p>
+                                                        <div className="latest-message-content">
+                                                            <p> {last.content?`${last.content.slice(0,30)} ...`:last.files[0].resource_type} </p>
+                                                        </div>
                                                         <p className='time'>{time} </p>
                                                     </div>
                                 
