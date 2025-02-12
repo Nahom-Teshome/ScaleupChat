@@ -1,6 +1,6 @@
 
 html,body{
-  background-color: rgb(235, 139, 139);
+  background-color: rgb(255, 255, 255);
   box-sizing: border-box;
   /* border:2px solid forestgreen; */
   margin: 0;
@@ -10,6 +10,7 @@ html,body{
   width: 100vw;
   height: 100vh;
   /* min-height: 100vh; */
+  font-size: 16px;
   font-family: Calibri, 'Trebuchet MS', sans-serif;
 }
 #root{
@@ -334,7 +335,7 @@ input:focus{
   display: flex;
   flex-direction: column-reverse;
   gap: 1rem ;
-  padding-bottom: 8%;
+  padding-bottom: 10vh;
   width: 100%;
   position: relative;
 }
@@ -433,25 +434,17 @@ input:focus{
   display: flex;
   flex-direction: column;
   gap: .3rem;
-  /* color: rgb(207, 212, 222); */
   align-self: start;
-  /* background: linear-gradient(to left,rgb(204, 44, 44), rgb(78, 101, 215)); */
-  /* background-color: rgb(30, 115, 114); */
-  /* background-color: rgb(244, 244, 244); */
-color: rgb(86, 86, 86);
+  color: rgb(86, 86, 86);
   background-color: rgb(235, 235, 235);
-
-  /* color: rgb(28, 27, 27); */
   margin-left: 1rem;
   width:fit-content;
   max-width: 50%;
   min-width: 10%;
   height: fit-content;
-  /* min-height: 4rem; */
   padding:.3rem 1rem;
   word-wrap: break-word;
   border-radius:0 1.5rem 1.5rem 1.6rem;
-  /* box-shadow: 1px 1px 5px 1px rgb(201, 201, 201); */
 }
 .message>.time{
   color:rgb(101, 101, 101) ;
@@ -464,16 +457,11 @@ color: rgb(86, 86, 86);
   width:fit-content;
   max-width: 50%;
   min-width: 10%;
-  /* max-width: 18rem; */
-  /* min-height: 4rem; */
   height: fit-content;
   align-self: end;
   align-content: center;
   color: rgb(218, 218, 218);
-  background-color:rgb(84, 151, 209);
   background-color:rgb(65, 136, 199);
-  /* background-color: rgb(25, 25, 25); */
-  /* background: linear-gradient(to right,rgb(204, 44, 44), rgb(78, 101, 215)); */
   padding: .3rem 1rem;
   margin-right: 1rem;
   border-radius: 1.5rem  0 1.6rem 1.5rem;
@@ -489,14 +477,20 @@ color: rgb(86, 86, 86);
 }
 .img-content{
   height: auto;
-  max-width: 100%;
+  width: 20em;
   display: block;
   object-fit: contain;
   border-radius: 1rem;
+  opacity:1;
+ 
 }
 .my-img-message{
-
-
+  background-color:transparent;
+  padding:.3rem  0.3rem;
+}
+.download-link{
+  position: relative;
+  
 }
 /* .img-container{
   background-color: chocolate;
@@ -732,4 +726,19 @@ color: rgb(86, 86, 86);
 .groups{
   background-color: darkred;
   width: 60%;
+}
+
+@media (max-width:360px){
+    body{
+      font-size: 6px
+    }
+    .message-name{
+      font-size: 6px;
+    }
+    .profile-card{
+      /* min-width: 2rem;
+      min-height: 2rem;
+      border-radius: .2rem; */
+      /* border: 2px solid red; */
+    }
 }

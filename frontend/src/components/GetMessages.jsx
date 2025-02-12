@@ -1,10 +1,11 @@
 import React from 'react'
 import { useUserContext } from '../hooks/useUserContext'
-import ProfileCard from './ProfileCard.jsx'
+import { AiOutlineDownload } from "react-icons/ai";
+// import ProfileCard from './ProfileCard.jsx'
 export default function GetMessages({selectedUserID,receivedMessage,sentMessage,roomID,sentFiles}){
     const [messages,setMessages] = React.useState([])
     const {user} = useUserContext()
-    const [tryMessages, setTryMessages] = React.useState([])
+    // const [tryMessages, setTryMessages] = React.useState([])
     // const [sender_id, setSender_id]= React.useState(null)
     // const [roomId, setRoomId]= React.useState(null)
     React.useEffect(()=>{
@@ -90,7 +91,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                 setMessages(prev=>{
 
                     return(
-                        [{content:sentMessage,sender_id:user._id,receiver_id:selectedUserID.id,createdAt:new Date().toISOString(),files:[sentFiles]},...prev]//current-user is the sender here and receiver_id will only have a value if the messaging is one to one , if it is a group chat it will be null
+                        [{content:sentMessage,sender_id:user._id,receiver_id:selectedUserID.id,createdAt:new Date().toISOString(),files:sentFiles?[sentFiles]:null},...prev]//current-user is the sender here and receiver_id will only have a value if the messaging is one to one , if it is a group chat it will be null
                     )
                 })
 
@@ -127,31 +128,33 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                   messages.map((text,ind)=>{   
                     const time = formatDate(text.createdAt)
                     const groupname =selectedUserID.name.find(name =>(name.id=== text.sender_id))
-                   
+                // console.log("text.files: ",text.files,'and here are the classNames; ',!text.files||text.files[0]?(user._id === text.sender_id ?'my-message':`message`):(user._id === text.sender_id ?'my-message my-img-message':`message img-message`))
                         return (text.files||text.content )&& (
                           
                         <div
-                          className={!text.files?(user._id === text.sender_id ?'my-message':`message`):(user._id === text.sender_id ?'my-message my-img-message':`message img-message`)}
+                          className={!text.files||text.files.length===0?(user._id === text.sender_id ?'my-message':`message`):(user._id === text.sender_id ?'my-message my-img-message':`message img-message`)}
                               key={ind} >
                                
                                 <p className='message-name'>{text.sender_id===selectedUserID.id?selectedUserID.name:
                                 groupname?groupname.name:
                                 user.name}</p>
                                     {(text.files?.length>0 &&text.files[0])&&
-                                 
                                     <>
-                                    <img
-                                    className='img-content'
-                                    src={text.files[0].secure_url} 
-                                    alt={text.files[0].public_id}
-                                    />
-                                    <a href={text.files[0].secure_url} download={text.files[0].filename||'download'} target='_blank' rel="noopener noreferrer">Download</a>
-                                    </>
+                                        {text.files[0].resource_type === 'image' ? <img
+                                        className='img-content'
+                                        src={text.files[0].secure_url} 
+                                        alt={text.files[0].public_id}
+                                        />:<p>{text.files[0].filename}</p>}
+                                        <a className="download-link" href={text.files[0].secure_url} download={text.files[0].filename||'download'} target='_blank' rel="noopener noreferrer">
+                                        <AiOutlineDownload />
+                                        </a>
+                                   </>
                                 }
                                 {text.content&& <p className='message-content'>{text.content}</p>}
                                 <p className="time">{time}</p>
                         </div>
-                              
+
+                      
                               )}) :
                               <div>looking for messages</div>
                             }

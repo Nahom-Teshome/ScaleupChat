@@ -20,7 +20,6 @@ import { FaLocationArrow } from "react-icons/fa";
   const [selectedUser,setSelectedUser] = React.useState({id:null,name:[]})
   const [roomId, setRoomId] = React.useState(null)
   const [moreClicked,setMoreClicked] = React.useState(false)
-  const [profileForm, setProfileForm] = React.useState(false)
   const {user} = useUserContext()
   const {socket,onlineUsers} = useSocketContext()
   // const [typing, setTyping] = React.useState(false)
@@ -131,11 +130,7 @@ console.log('inside cloudinaryUpload')
             }
             const sendMessage=async(e)=>{
               e.preventDefault()
-              
-           
-   
-            
-           
+            // setNewFile({secure_url:URL.createObjectURL(file[0])})
             console.log("file: ", file)
             // const fileInfo = await Promise.all(file.map(cloudinaryUpload))
          
@@ -144,15 +139,15 @@ console.log('inside cloudinaryUpload')
             file&&console.log("Cloudinary data fileInfo: ", fileInfo.secure_url)
             setNewFile( fileInfo)
 
-            const fileMessage = fileInfo&& {
+            const fileMessage = fileInfo? {
               public_id:fileInfo.public_id,
               secure_url:fileInfo.secure_url,
               filename:fileInfo.original_filename,
               format:fileInfo.format,
               resource_type:fileInfo.resource_type,
               bytes:fileInfo.bytes
-            }
-          if(file || message){
+            }:null
+          if(fileMessage || message){
             if(socket && selectedUser.id)
             {
               setNewMessage(message)
@@ -163,6 +158,7 @@ console.log('inside cloudinaryUpload')
                 fileInputRef.current.value = ''
                }
               setFile('')
+              setNewFile(null)
             }
             else{
               console.log("must select room or User","socket connection?: ",socket?socket:"no socket connection")
@@ -286,9 +282,7 @@ console.log("Current LOGGED IN USER: ", user)
                        }
                           
                        </div>
-                                  {newFile && 
-                                 <img  src={newFile.secure_url} alt="sentImage" 
-                                    style={{border:'1px solid firebrick',width:'9rem',height:'100%'}}/>    }        
+                                         
                   </div>}
                 
                                                              
