@@ -70,7 +70,7 @@ const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
         if(sentMessage ){
 console.log("sentMessage in getUsers: ",sentMessage)
-           lastMessages&& setLastMessages((prev)=>{
+           lastMessages? setLastMessages((prev)=>{
                 const newLastMessage = prev.map(last =>{ 
                     return last.sender_id===user._id && last.receiver_id ===selectedUser ||
                            last.receiver_id===user._id && last.sender_id ===selectedUser  ?
@@ -78,7 +78,8 @@ console.log("sentMessage in getUsers: ",sentMessage)
                     })
                     console.log("The new LAST message: ", newLastMessage)
                  return newLastMessage
-            })
+            }):setLastMessages([{content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString(),files:[sentFiles]}])
+        
         }
         // console.log("last message update sent messages: ",sentMessage)
     },[sentMessage,sentFiles])
@@ -86,15 +87,15 @@ console.log("sentMessage in getUsers: ",sentMessage)
     //   ||last.sender_id===user._id && last.receiver_id ===selectedUser
         if(receivedMessage ){
 
-            setLastMessages((prev)=>{
-            const newLastMessage = prev.map(last =>{
+          lastMessage? setLastMessages((prev)=>{
+            const newLastMessage =prev.map(last =>{
             
                 return last.receiver_id=== receivedMessage.receiver_id && last.sender_id===receivedMessage.sender_id || last.receiver_id === receivedMessage.sender_id && last.sender_id ===receivedMessage.receiver_id ?
                 receivedMessage:last
             })
                                 console.log("The new LAST message receive: ", newLastMessage)
               return newLastMessage
-        })
+        }):setLastMessages([receivedMessage])
     }
     // console.log("last message update receive messages: ",receivedMessage,)
     },[receivedMessage])

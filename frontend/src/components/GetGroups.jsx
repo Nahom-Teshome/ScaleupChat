@@ -5,7 +5,7 @@ import ProfileCard from './ProfileCard'
 
 export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage,sentFiles}){
     const [groups,setGroups] = React.useState([])
-    const [lastMessages,setLastMessages] = React.useState()
+    const [lastMessages,setLastMessages] = React.useState([])
     const {user}= useUserContext()
     const {lastMessage} = useLastMessageContext()
     React.useEffect(()=>{
@@ -45,23 +45,23 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
     React.useEffect(()=>{
 console.log("sent message in gerGroups: ",sentMessage)
 
-        lastMessages && setLastMessages((prev)=>{
+        lastMessage ? setLastMessages((prev)=>{
             const newLastMessage= prev.map(last=>{
                return  last.room_id === selectedGroup ? {content:sentMessage,room_id:selectedGroup,sender_id:user._id,createdAt:new Date().toISOString(),files:[sentFiles]}: last
                 })
             return newLastMessage
-            })
+            }):setLastMessages([{content:sentMessage,room_id:selectedGroup,sender_id:user._id,createdAt:new Date().toISOString(),files:[sentFiles]}])
         
     },[sentMessage,sentFiles])
     React.useEffect(()=>{
 console.log("received message in geTGroups: ",receivedMessage)
 
-        lastMessages && setLastMessages((prev)=>{
-            const newLastMessage=prev.length>0? prev.map(last=>{
+        lastMessage ? setLastMessages((prev)=>{
+            const newLastMessage=prev.map(last=>{
                return  last.room_id === receivedMessage.room_id ? receivedMessage: last
-                }):receivedMessage
+                })
             return newLastMessage
-            })
+            }):setLastMessages([receivedMessage])
         
     },[receivedMessage])
 

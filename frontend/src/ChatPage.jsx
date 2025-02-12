@@ -13,7 +13,7 @@ import { FaLocationArrow } from "react-icons/fa";
 
  function ChatPage(){
   // const [isConnected, setIsConnected] = React.useState(false)
-  const [message, setMessage] = React.useState(null)
+  const [message, setMessage] = React.useState('')
   const [file , setFile] = React.useState(null)
   const [newMessage, setNewMessage] = React.useState('')
   const [receivedMessage, setReceivedMessage] = React.useState('')
@@ -29,27 +29,8 @@ import { FaLocationArrow } from "react-icons/fa";
   const newSocket = socket
   console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
   React.useEffect(()=>{
-    // console.log("Socket Connection useEffect")
-    // const newSocket =io("http://localhost:300", {
-      //   transports: ["websocket"],
-      // })
-      // const newSocket = io('/socket.io')
-    // console.log(socket?'exists':"doesn't exist")
+   
       try{
-        
-        // setSocket(newSocket)
-        // dispatch({type:'CONNECT',payload:newSocket})
-        
-        // newSocket.on('connect',()=>{
-               
-        //           // newSocket.emit('userOnline',(user._id))
-
-        //           // newSocket.on('online',(arg)=>{
-        //             // console.log("expecting list of online Users:", arg)
-        //             // setIsOnline(arg)
-        //           // })
-        //         console.log("Connected to io Sever")
-        //       })
               if(roomId){
                 newSocket.emit("joinRoom",roomId)
               }
@@ -60,13 +41,6 @@ import { FaLocationArrow } from "react-icons/fa";
         
             newSocket.on('receiveMessage',(message)=>{
               console.log("receiving messages that were sent from other users: ",message)
-              // console.log(` userId: ${userId}, message.sender_id ${message.sender_id}`)
-              // if(userId=== message.sender_id){
-                // console.log("message has come in : ", message.content)
-          // console.log(`SELECTEDuser.id: ${selectedUser.id} === message.reciecer_id${message.receiver_id} `)
-               
-              
-          // console.log(" Setting messages ")
                 setReceivedMessage(message)
               
           
