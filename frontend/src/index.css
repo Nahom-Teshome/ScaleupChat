@@ -478,7 +478,7 @@ input:focus{
 }
 .img-content{
   height: auto;
-  width: 20rem;
+  width: 100%;
   display: block;
   object-fit: contain;
   border-radius: 1rem;
@@ -486,6 +486,10 @@ input:focus{
  
 }
 .my-img-message{
+  background-color:transparent;
+  padding:.3rem  0.3rem;
+}
+.img-message{
   background-color:transparent;
   padding:.3rem  0.3rem;
 }
