@@ -1,5 +1,5 @@
 import React, { createContext , useReducer} from 'react'
-
+import { useNavigate } from 'react-router-dom'
 
 
     export const UserContext = createContext()
@@ -19,7 +19,7 @@ import React, { createContext , useReducer} from 'react'
     }
     export default function UserContextProvider({children}){
         const [state,dispatch] = useReducer(userReducer,{user:null})
-
+        const navigate = useNavigate()
         React.useEffect(()=>{
             if(state.user){
                 localStorage.setItem('user',state.user.name)
@@ -46,6 +46,7 @@ import React, { createContext , useReducer} from 'react'
             //  console.log("data from useContext: ", data)
 
                         dispatch({type:'LOGIN',payload:data.user})
+                        navigate('/chat')
                     }
                     catch(err)
                     {
