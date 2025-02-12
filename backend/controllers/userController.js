@@ -53,10 +53,10 @@ async function userLogin(req,res){
             //sending cookie named "authCookie" which contains the TOKEN we created above ,to the frontend
         res.cookie('authCookie',token,{
                 httpOnly:true,
-                //  secure:true, 
-                 sameSite:"lax",//change to none when in production
+                 secure:true, 
+                 sameSite:"none",//change to none when in production
                 //  domain:".onrender.com",
-                //  path:"/",
+                 path:"/",
                maxAge:(60000 * 60 *24)
              })
        console.log("userLogin: ",user)
