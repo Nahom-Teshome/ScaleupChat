@@ -21,8 +21,8 @@ export default function App(){
                     <Route index element={<Login/>}/>
                     <Route path="chat" element={!(user &&  localUser )? <Navigate to="/login"/> :<ChatPage/>}/>
                     <Route path='group' element={<CreateGroup/>}/>
-                    <Route path="login" element={!user?<Login/>:<Navigate to="/chat"/>}/>
-                    <Route path="signUp" element={!user?<SignUp/>:<Navigate to="/chat"/>}/>
+                    <Route path="login" element={!(user && localUser )?<Login/>:<Navigate to="/chat"/>}/>
+                    <Route path="signUp" element={!(user && localUser)?<SignUp/>:<Navigate to="/chat"/>}/>
                     <Route path="group" element={<CreateGroup/>}/>
                 </Route>
             </Routes>
