@@ -478,7 +478,7 @@ input:focus{
 }
 .img-content{
   height: auto;
-  width: 20em;
+  width: 20rem;
   display: block;
   object-fit: contain;
   border-radius: 1rem;
