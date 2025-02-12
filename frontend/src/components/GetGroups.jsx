@@ -57,9 +57,9 @@ console.log("sent message in gerGroups: ",sentMessage)
 console.log("received message in geTGroups: ",receivedMessage)
 
         lastMessages && setLastMessages((prev)=>{
-            const newLastMessage= prev.map(last=>{
+            const newLastMessage=prev.length>0? prev.map(last=>{
                return  last.room_id === receivedMessage.room_id ? receivedMessage: last
-                })
+                }):receivedMessage
             return newLastMessage
             })
         
