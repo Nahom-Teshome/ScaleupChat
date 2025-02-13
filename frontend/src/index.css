@@ -36,6 +36,7 @@ html,body{
   min-height: 92%;
   width: 100%;
   max-width:100%;
+  position: relative;
 }
 
 .form{
@@ -86,6 +87,17 @@ input:focus{
   max-height: 100%;
   height:100%;
   position:relative
+}
+.chat-container-mobile{
+  /* border: 2px solid brown; */
+  background-color: rgb(253, 253, 253);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  /* min-width:35% ; */
+  max-height: 100%;
+  height:100%;
 }
 .chat-header{
   background-color: rgb(255, 255, 255);
@@ -326,7 +338,7 @@ input:focus{
 
 .chat-wrapper{
   /* background-color: rgb(167, 51, 51);  */
-  background-color: rgb(253, 253, 253); 
+  /* background-color: rgb(253, 253, 253);  */
   overflow-y: scroll;
   scrollbar-width:none;
   min-height: 70%;
@@ -536,8 +548,46 @@ input:focus{
   border-right: 1px solid rgb(196, 193, 193);
   overflow-y: scroll;
   scrollbar-width: none;
+  /* border: 1px solid saddlebrown; */
 }
-
+.users-container-mobile-hide{
+  background-color: rgb(45, 44, 44);
+  color: black;
+  /* max-height: 100%; */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid rgb(196, 193, 193);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  position:absolute;
+   left:-30rem;
+  /* border: 1px solid saddlebrown; */
+}
+.users-container-mobile-show{
+  background-color: rgb(45, 44, 44);
+  color: black;
+  /* max-height: 100%; */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid rgb(196, 193, 193);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  position:absolute;
+  z-index: 19;
+  /* border: 1px solid saddlebrown; */
+}
+.mobile-arrow{
+  position:absolute;
+  top: 3rem;
+  left: 1rem;
+  z-index: 4;
+}
 .user-list-container{
   background-color: rgb(255, 255, 255);
   color: black;
@@ -756,13 +806,16 @@ input:focus{
 
 @media (max-width:415px) {
     html{
-      font-size: 10px;
+      font-size: 13px;
     }
     h1,h2,h3,h4,h5,p,div{
-      font-size: 8px
+      font-size: 13px
     }
     .profile-card{
-      /* font-size: 7px; */
+      font-size: 14px;
+    }
+    .users-container{
+      width: 100%;
     }
 }
 @media (max-width:360px){
@@ -770,7 +823,7 @@ input:focus{
       font-size: 10px
     }
     h1,h2,h3,h4,h5,p,div{
-      font-size: 5px
+      font-size: 10px
     }
     .message-name{
       /* font-size: 6px; */

@@ -3,7 +3,7 @@ import {useLastMessageContext} from '../hooks/useLastMessageContext'
 import { useUserContext } from '../hooks/useUserContext'
 import ProfileCard from './ProfileCard'
 
-export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage,sentFiles}){
+export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage,sentFiles,mobileView}){
     const [groups,setGroups] = React.useState([])
     const [lastMessages,setLastMessages] = React.useState([])
     const {user}= useUserContext()
@@ -93,7 +93,7 @@ console.log("received message in geTGroups: ",receivedMessage)
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
-                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl)}}
+                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView()}}
                         >
                             <ProfileCard classname="user-list-profile">
                                 <img className="profilePic-img" src={group.imageUrl} alt="" />

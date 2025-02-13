@@ -4,7 +4,7 @@ import { useUserContext } from '../hooks/useUserContext'
 // import { useSocketContext } from '../hooks/useSocketContext'
 import { useLastMessageContext } from '../hooks/useLastMessageContext'
 import ProfileCard from './ProfileCard'
-export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessage,receivedMessage,sentFiles}){
+export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessage,receivedMessage,sentFiles,mobileView}){
     
     const [users,setUsers] =React.useState(null)
     const {user} = useUserContext()
@@ -130,7 +130,7 @@ return(// SLOW LOADING ISSUE
                     
                     let online = isOnline && isOnline.includes(userI._id) ? true: false
                     return userI._id !== user._id && (<button className={userI._id === selectedUser? 'current-user':'user'}
-                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl)}} 
+                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView('Mobile called')}} 
                         key={i} >  
                          <ProfileCard classname='user-list-profile'>
                                         <img  className="profilePic-img" src={userI.imageUrl} alt="" />

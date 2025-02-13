@@ -9,8 +9,8 @@ import GetMessages from './components/GetMessages'
 import { useSocketContext } from './hooks/useSocketContext'
 import { BsPaperclip } from "react-icons/bs";
 import { IoChevronBack } from "react-icons/io5";
-import { FaLocationArrow } from "react-icons/fa";
-
+import { FaLessThanEqual, FaLocationArrow } from "react-icons/fa";
+import { useMediaQuery } from './hooks/useMediaQuery';
  function ChatPage(){
   // const [isConnected, setIsConnected] = React.useState(false)
   const [message, setMessage] = React.useState('')
@@ -26,6 +26,9 @@ import { FaLocationArrow } from "react-icons/fa";
   const [noOfOnlineUsers,setNoOfOnlineUsers] = React.useState(0)
   const [newFile ,setNewFile] = React.useState(null)//array because the file field in Db is an[]
   const fileInputRef = React.useRef(null)
+  const [isShown, setIsShown] = React.useState(true)
+  const [isMobile, setIsMobile] = React.useState(false)
+   let screenSize = useMediaQuery("(max-width: 450px)")
   const newSocket = socket
   console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
   React.useEffect(()=>{
@@ -185,11 +188,15 @@ console.log('inside cloudinaryUpload')
           //   setTyping(true)
           //   console.log("TYPING")
           // }
+          React.useEffect(()=>{
+            console.log("Checking Screen Size in Chat")
+            setIsMobile(screenSize)
+          },[screenSize])
 console.log("Current LOGGED IN USER: ", user)
        
   return (
         <div className="main-container">
-            <div className="users-container">
+            <div className={isMobile?(isShown?"users-container-mobile-show":"users-container-mobile-hide"):"users-container"}>
               {user && <div  className="active-user">
                 <ProfileCard 
                    userId={user._id}//only if the user._id matches with the logged in user or only if it is sent will user be able to update image
@@ -215,6 +222,7 @@ console.log("Current LOGGED IN USER: ", user)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
+                                mobileView={ screenSize?()=>{setIsShown(false)}:null}
                                 />
 
                       <GetGroups getRoomId={getRoomId}
@@ -222,16 +230,17 @@ console.log("Current LOGGED IN USER: ", user)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
+                                mobileView={screenSize? ()=>{setIsShown(false)}:null}
                                 />
                     
                 </div>
             </div>
 
-            <div className="chat-container">
+            <div className={!isMobile? "chat-container" :"chat-container-mobile"}>
               {selectedUser.id &&<div className="chat-header"> 
                
                 {selectedUser.id && <div className="user-info">
-                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]});setRoomId(null);setMoreClicked(false)}}><IoChevronBack /></button>
+                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]});setRoomId(null);setMoreClicked(false);setIsShown(true)}}><IoChevronBack /></button>
                       <ProfileCard> 
                         {/* <h4 className="username-initial">
                                {selectedUser.groupName?selectedUser.groupName[0]:selectedUser.name.map(n=>n[0])}
