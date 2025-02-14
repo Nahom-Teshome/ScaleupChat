@@ -806,16 +806,27 @@ input:focus{
 
 @media (max-width:415px) {
     html{
-      font-size: 13px;
+      font-size: 15px;
     }
     h1,h2,h3,h4,h5,p,div{
-      font-size: 13px
+      font-size: 15px
     }
-    .profile-card{
-      font-size: 14px;
+    .chat-btn{
+      width: 3.2em;
+      height: 3.2em;
+      font-size: 12px;
     }
-    .users-container{
-      width: 100%;
+    .chat-input{
+      width: 82%;
+      text-indent: 0%;
+      margin-left: 1.4rem;
+    }
+    .chat-input-wrapper{
+      display: flex;
+      justify-content: start;
+    }
+    .paper-clip{
+      left:1.5rem
     }
 }
 @media (max-width:360px){
@@ -825,16 +836,12 @@ input:focus{
     h1,h2,h3,h4,h5,p,div{
       font-size: 10px
     }
-    .message-name{
-      /* font-size: 6px; */
-    }
-    .profile-card{
-      /* min-width: 2rem;
-      min-height: 2rem;
-      border-radius: .2rem; */
-      /* border: 2px solid red; */
-    }
-    .img-content{
-      /* font-size: 1px; */
-    }
+  .users-container-mobile-hide{
+    left:-35rem
+  }
+  .chat-btn{
+    width: 3.2em;
+    height: 3.2em;
+    font-size: 10px;
+  }
 }

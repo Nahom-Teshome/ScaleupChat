@@ -26,7 +26,7 @@ import { useMediaQuery } from './hooks/useMediaQuery';
   const [noOfOnlineUsers,setNoOfOnlineUsers] = React.useState(0)
   const [newFile ,setNewFile] = React.useState(null)//array because the file field in Db is an[]
   const fileInputRef = React.useRef(null)
-  const [isShown, setIsShown] = React.useState(true)
+  const [usersShown, setUsersShown] = React.useState(true)
   const [isMobile, setIsMobile] = React.useState(false)
    let screenSize = useMediaQuery("(max-width: 450px)")
   const newSocket = socket
@@ -196,7 +196,7 @@ console.log("Current LOGGED IN USER: ", user)
        
   return (
         <div className="main-container">
-            <div className={isMobile?(isShown?"users-container-mobile-show":"users-container-mobile-hide"):"users-container"}>
+            <div className={isMobile?(usersShown?"users-container-mobile-show":"users-container-mobile-hide"):"users-container"}>
               {user && <div  className="active-user">
                 <ProfileCard 
                    userId={user._id}//only if the user._id matches with the logged in user or only if it is sent will user be able to update image
@@ -222,7 +222,7 @@ console.log("Current LOGGED IN USER: ", user)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
-                                mobileView={ screenSize?()=>{setIsShown(false)}:null}
+                                mobileView={ screenSize?()=>{setUsersShown(false)}:null}
                                 />
 
                       <GetGroups getRoomId={getRoomId}
@@ -230,7 +230,7 @@ console.log("Current LOGGED IN USER: ", user)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
-                                mobileView={screenSize? ()=>{setIsShown(false)}:null}
+                                mobileView={screenSize? ()=>{setUsersShown(false)}:null}
                                 />
                     
                 </div>
@@ -240,7 +240,7 @@ console.log("Current LOGGED IN USER: ", user)
               {selectedUser.id &&<div className="chat-header"> 
                
                 {selectedUser.id && <div className="user-info">
-                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]});setRoomId(null);setMoreClicked(false);setIsShown(true)}}><IoChevronBack /></button>
+                  <button className="chat-header-back" onClick={()=>{setSelectedUser({id:null,name:[]});setRoomId(null);setMoreClicked(false);setUsersShown(true)}}><IoChevronBack /></button>
                       <ProfileCard> 
                         {/* <h4 className="username-initial">
                                {selectedUser.groupName?selectedUser.groupName[0]:selectedUser.name.map(n=>n[0])}
