@@ -872,7 +872,8 @@ input:focus{
       justify-content: start;
     }
     .paper-clip{
-      left:1.5rem
+      left:1.5rem;
+      z-index:1000;
     }
     .update-profile{
       top:20%;
