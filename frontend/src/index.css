@@ -873,7 +873,7 @@ input:focus{
     }
     .paper-clip{
       left:1.5rem;
-      z-index:1000;
+      z-index:2;
     }
     .update-profile{
       top:20%;
@@ -882,13 +882,17 @@ input:focus{
       height: 30em;
       font-size: 14px;
     }
-}
-@media (max-width:360px){
+  }
+  @media (max-width:360px){
     html{
       font-size: 10px
     }
     h1,h2,h3,h4,h5,p,div{
       font-size: 10px
+    }
+    .paper-clip{
+      left:1.5rem;
+      z-index:2;
     }
   .users-container-mobile-hide{
     left:-35rem
