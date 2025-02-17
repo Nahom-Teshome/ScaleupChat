@@ -5,8 +5,10 @@ import App from './App.jsx'
 import UserContextProvider from './context/UserContextProvider.jsx'
 import SocketContextProvider from './context/SocketContextProvider.jsx'
 import LastMessageContextProvider from './context/LastMessgeContextProvider.jsx'
+import {ErrorBoundary} from 'react-error-boundary'
 
 createRoot(document.getElementById('root')).render(
+ <ErrorBoundary fallback={<div>An Error Occured</div>}>
   <StrictMode>
     <UserContextProvider>
       <SocketContextProvider>
@@ -16,4 +18,5 @@ createRoot(document.getElementById('root')).render(
       </SocketContextProvider>
     </UserContextProvider>
   </StrictMode>
+  </ErrorBoundary>
 )

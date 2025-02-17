@@ -26,8 +26,10 @@ import { useMediaQuery } from './hooks/useMediaQuery';
   const [noOfOnlineUsers,setNoOfOnlineUsers] = React.useState(0)
   const [newFile ,setNewFile] = React.useState(null)//array because the file field in Db is an[]
   const fileInputRef = React.useRef(null)
+  const [miniImage , setMiniImage] = React.useState(null)
   const [usersShown, setUsersShown] = React.useState(true)
   const [isMobile, setIsMobile] = React.useState(false)
+
    let screenSize = useMediaQuery("(max-width: 450px)")
   const newSocket = socket
   console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
@@ -105,8 +107,23 @@ console.log('inside cloudinaryUpload')
                 console.log("Error from cloudinary: ", err.message)
               }
             }
+            React.useEffect(()=>{//image or file shouldn't display if user clicks outside of chat-input
+              const clickOutside=(event)=>{
+                console.log("Clicked outside of CHAT")
+                if(file &&  !event.target.closest('.chat-form')){
+                  setMiniImage(null)
+                  setFile(null)
+                }
+              }
+              document.addEventListener('mousedown',clickOutside)
+
+              return ()=>{
+               document.removeEventListener('mousedown',clickOutside)
+              }
+            },[file])
             const sendMessage=async(e)=>{
               e.preventDefault()
+              setNewFile(null)
             // setNewFile({secure_url:URL.createObjectURL(file[0])})
             console.log("file: ", file)
             // const fileInfo = await Promise.all(file.map(cloudinaryUpload))
@@ -135,7 +152,8 @@ console.log('inside cloudinaryUpload')
                 fileInputRef.current.value = ''
                }
               setFile('')
-              setNewFile(null)
+              
+              setMiniImage(null)
             }
             else{
               console.log("must select room or User","socket connection?: ",socket?socket:"no socket connection")
@@ -299,18 +317,24 @@ console.log("Current LOGGED IN USER: ", user)
                     </div>
                         <input className="file-input" type="file" multiple
                                 onChange={(e)=>{
-                                  setFile(Array.from(e.target.files))
+                                  console.log("File loaded to Chat input: ",e.target.files[0])
+                                  setFile(Array.from(e.target.files));
+                                  setMiniImage(e.target.files[0].type.split('/')[0] === 'image'?([URL.createObjectURL(e.target.files[0]),e.target.files[0].name]):['/file.png',e.target.files[0].name]);
                                 }}
                                 ref={fileInputRef}
                                 name='file'
                                 />
                            <BsPaperclip className='paper-clip'/>
+                           {file && <div className="mini-img-wrapper">
+                                <img className="mini-img"src={miniImage[0]} />
+                               {miniImage.length>1&& <p>{ miniImage[1]}</p>}
+                            </div>}
                         <button className="chat-btn" onClick={sendMessage}><FaLocationArrow /></button>
                   </form>}
 
             </div>
            {moreClicked&& 
-           <div className="more-group-details">
+           <div className={isMobile?"more-group-details-mobile":"more-group-details"}>
                <div className="more-group-details-header">
                   <button className="exit-btn"onClick={()=>{setMoreClicked(false)}}>         <RxCross2 />
                   </button>
