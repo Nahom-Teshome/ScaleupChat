@@ -873,7 +873,9 @@ input:focus{
     }
     .paper-clip{
       left:1.5rem;
-      z-index:2;
+    }
+    .file-input{
+      left:1.5rem
     }
     .update-profile{
       top:20%;
@@ -890,23 +892,19 @@ input:focus{
     h1,h2,h3,h4,h5,p,div{
       font-size: 10px
     }
-    .paper-clip{
-      left:1.5rem;
-      z-index:2;
+    .users-container-mobile-hide{
+    left:-45rem
     }
-  .users-container-mobile-hide{
-    left:-35rem
-  }
-  .chat-btn{
-    width: 3.2em;
-    height: 3.2em;
-    font-size: 10px;
-  }
-  .update-profile{
-    top:20%;
-    left:20%;
-    width: 20em;
-    height: 30em;
-    font-size: 10px;
-  }
+    .chat-btn{
+      width: 3.2em;
+      height: 3.2em;
+      font-size: 10px;
+    }
+    .update-profile{
+      top:20%;
+      left:20%;
+      width: 20em;
+      height: 30em;
+      font-size: 10px;
+    }
 }

@@ -324,7 +324,7 @@ console.log("Current LOGGED IN USER: ", user)
                                 ref={fileInputRef}
                                 name='file'
                                 />
-                           <BsPaperclip className='paper-clip'/>
+                              <BsPaperclip className='paper-clip'/>
                            {file && <div className="mini-img-wrapper">
                                 <img className="mini-img"src={miniImage[0]} />
                                {miniImage.length>1&& <p>{ miniImage[1]}</p>}
