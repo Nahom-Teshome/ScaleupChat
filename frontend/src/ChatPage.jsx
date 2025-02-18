@@ -9,7 +9,7 @@ import GetMessages from './components/GetMessages'
 import { useSocketContext } from './hooks/useSocketContext'
 import { BsPaperclip } from "react-icons/bs";
 import { IoChevronBack } from "react-icons/io5";
-import { FaLessThanEqual, FaLocationArrow } from "react-icons/fa";
+import {  FaLocationArrow } from "react-icons/fa";
 import { useMediaQuery } from './hooks/useMediaQuery';
  function ChatPage(){
   // const [isConnected, setIsConnected] = React.useState(false)
