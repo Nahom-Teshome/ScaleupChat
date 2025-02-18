@@ -21,12 +21,12 @@ const auth = require("./middleware/Auth")
 //     methods: ["GET", "POST","PATCH"],
 // }));
 app.use(cors({
-    origin:'*',
+    origin:"https://chat.scaleuptutor.com",
     credentials:true, 
 }))
 const  io = new Server(server,{
     cors:{
-        origin:'*',
+        origin:"https://chat.scaleuptutor.com",
         credentials:true, 
     }})
 // const  io = new Server(server,{
