@@ -13,24 +13,33 @@ const server = http.createServer(app)
 const cors = require('cors')
 const auth = require("./middleware/Auth")
         const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173","https://chat.scaleuptutor.com","*"]
+// app.use(cors({
+//     // origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
+//     origin: allowedOrigin,// Allow requests only from this origin
+//     credentials:true,  
+//     allowedHeaders :['content-type','Authorization'],
+//     methods: ["GET", "POST","PATCH"],
+// }));
 app.use(cors({
-    // origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
-    origin: allowedOrigin,// Allow requests only from this origin
-    credentials:true,  
-    allowedHeaders :['content-type','Authorization'],
-    methods: ["GET", "POST","PATCH"],
-}));
+    origin:'*',
+    credentials:true, 
+}))
 const  io = new Server(server,{
     cors:{
-    //    origin:process.env.ALLOWED_ORIGIN?.split(',') ||[], // Allow connections from your production server
-        // origin:"http://localhost:5173", // Allow connections from your development server
-        // origin:allowedOrigin,
-        origin:allowedOrigin,
-        methods: ["GET", "POST","PATCH"],
-        credentials: true,
-        allowedHeaders:['content-type','Authorization']
-    }
-})
+        origin:'*',
+        credentials:true, 
+    }})
+// const  io = new Server(server,{
+//     cors:{
+//     //    origin:process.env.ALLOWED_ORIGIN?.split(',') ||[], // Allow connections from your production server
+//         // origin:"http://localhost:5173", // Allow connections from your development server
+//         // origin:allowedOrigin,
+//         origin:allowedOrigin,
+//         methods: ["GET", "POST","PATCH"],
+//         credentials: true,
+//         allowedHeaders:['content-type','Authorization']
+//     }
+// })
 
 app.use(express.json())//allows json data to be received
 app.use(cookieParser())// parses incoming cookie data
