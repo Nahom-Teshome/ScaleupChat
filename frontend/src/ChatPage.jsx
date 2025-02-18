@@ -36,6 +36,7 @@ import { useMediaQuery } from './hooks/useMediaQuery';
   React.useEffect(()=>{
    
       try{
+        console.log('subscription use effect')
               if(roomId){
                 newSocket.emit("joinRoom",roomId)
               }
