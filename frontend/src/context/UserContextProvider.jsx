@@ -1,4 +1,5 @@
 import React, { createContext , useReducer} from 'react'
+import { useNavigate } from 'react-router-dom'
 
 
     export const UserContext = createContext()
@@ -8,6 +9,8 @@ import React, { createContext , useReducer} from 'react'
                 return {user:action.payload}
             case 'SIGNUP':
                 return {user:action.payload}
+            case 'UPDATE':
+                return {user:{...state.user,imageUrl:action.payload}}
             case 'LOGOUT':
                 return {user:null}
             default:
@@ -16,6 +19,13 @@ import React, { createContext , useReducer} from 'react'
     }
     export default function UserContextProvider({children}){
         const [state,dispatch] = useReducer(userReducer,{user:null})
+        
+        React.useEffect(()=>{
+            if(state.user){
+                localStorage.setItem('user',state.user.name)
+                console.log("Local Storage user Set to : ", state.user)
+            }
+        },[state])
         React.useEffect(()=>{
             
             const fetchUser = async()=>{
@@ -36,13 +46,17 @@ import React, { createContext , useReducer} from 'react'
             //  console.log("data from useContext: ", data)
 
                         dispatch({type:'LOGIN',payload:data.user})
+                        
                     }
                     catch(err)
                     {
                         console.log("Error from userContext useEffect: ",err)
                     }
             }
-                fetchUser()
+             if(localStorage.getItem('user')){
+                fetchUser()//  todo: comment out for the timebeing
+                
+             }
         //  console.log("useEffect: ","User REGISTERED: ",state.user)
             
         },[])

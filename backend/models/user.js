@@ -18,6 +18,10 @@ const userSchema = new Schema(
             type:String,
             required:true
         },
+        imageUrl:{
+            type:String,
+            default:'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+        },
         role:{
             type:String,
             default:'user'
@@ -103,7 +107,7 @@ userSchema.statics.login = async function(email,password){
             throw Error('Incorrect Password')
         }
             //don't return the password
-        return {name:user.name,email:user.email,role:user.role,_id:user._id}
+        return {name:user.name,email:user.email,role:user.role,_id:user._id,imageUrl:user.imageUrl}
     
 }
 

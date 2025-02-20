@@ -23,6 +23,7 @@ export function useLogout(){
             }
             dispatch({type:'LOGOUT'})
             lastMessagesDispatch({type:'CLEAR'})
+            localStorage.clear()
             console.log("Logged out Successfuly")
         }
         catch(err){

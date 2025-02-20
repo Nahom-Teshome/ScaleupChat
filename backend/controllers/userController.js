@@ -22,8 +22,10 @@ async function userSignup(req,res){
             // below we are sending cookie named "authCookie" which contains the TOKEN we created above to the frontend
         res.cookie('authCookie',token,{
                  httpOnly:true,//no javascript manipulationddd
-                 secure: process.env.NODE_ENV === 'production', //for production 
-                 sameSite:'lax', // must be accessed only when request comes from the same path
+                 secure: true, //for production 
+                 sameSite:"none", // must be accessed only when request comes from the same path
+                 path:"/",
+                //  domain:".onrender.com",
                  maxAge:(60000 * 60 *24)// expiry date for 1 day 60000seconds * 60 * 24
              })
              // below we send back the user object with necessary data
@@ -51,16 +53,49 @@ async function userLogin(req,res){
             //sending cookie named "authCookie" which contains the TOKEN we created above ,to the frontend
         res.cookie('authCookie',token,{
                 httpOnly:true,
-                 secure: process.env.NODE_ENV === 'production', 
-                 sameSite:'lax',
+                 secure:true, 
+                 sameSite:"none",//change to none when in production
+                //  domain:".onrender.com",
+                 path:"/",
                maxAge:(60000 * 60 *24)
              })
+       console.log("userLogin: ",user)
             //Sending  positive response along with the "user " object
         res.status(200).json({user,message:"Logging In"})
     }
     catch(err){
         console.log("login error: ",err.message)
         res.status(400).json({Error:err.message})//catches error and sends them to the frontend 
+    }
+}
+async function updateuser(req,res){
+    const id = req.user
+
+    try{
+        if(!id){
+            console.log("user NOT logged in")
+            throw error("user NOT logged in")
+        }
+
+        const exists = await User.findOne({_id:id})
+        if(!exists){
+            console.log("User not recognized")
+            throw error("User not recognized")
+        }
+
+        const update = await User.updateOne(
+            {_id:id,},
+            {$set:req.body}
+        )
+        if(!update){
+            console.log("update unsuccessfull")
+            throw Error("update unsuccessfull")
+        }
+        console.log("success updating User: ", update)
+        res.status(200).json({message:'Success',update:update})
+    }
+    catch(err){
+        res.status(400).json({Error:err.message})
     }
 }
 
@@ -161,7 +196,7 @@ async function getMyUsers(req,res){
     
                 users.add(messages.sender_id)
                 users.add(messages.receiver_id )
-            })// i add the both the sender_id and receiver_id to a set to avoid duplicates and that gives me the users the logged-in user has been talking to. I can use those id's to get the conversation between the two and fetch the last messages but right now i will get the users
+            })// i add the both the sender_id and receiver_id to a Set to avoid duplicates and that gives me the users the logged-in user has been talking to. I can use those id's to get the conversation between the two and fetch the last messages but right now i will get the users
 
             const userIds = [...users]//since "users" is a SET i can't loop over it hence why it is spread into an array
             const myUsers =[]
@@ -169,11 +204,11 @@ async function getMyUsers(req,res){
             for(let i = 0 ; i<userIds.length; i++){
                 if(userIds[i] !== undefined){
                     // console.log("user id shouldn't be null or undefined: ",userIds[i])
-                    myUsers.push( await User.findOne({_id:userIds[i]},{_id:1,name:1,email:1,role:1})  )
+                    myUsers.push( await User.findOne({_id:userIds[i]},{_id:1,name:1,email:1,role:1,imageUrl:1})  )
                 }
                 }// the loop allows me to fetch all the users and their specific fields and store it in an array
          
-
+console.log("my users IN GetmyUsers controller : ", myUsers)
             res.status(200).json({message:'Success',myUsers})
         }
         catch(err){
@@ -182,4 +217,4 @@ async function getMyUsers(req,res){
 }
 
 // exporting functions to use them in the routes(message routes)
-module.exports = {userSignup,userLogin,getUsers,getCurrentUser,logout,getMyUsers,users}
+module.exports = {userSignup,userLogin,getUsers,getCurrentUser,logout,getMyUsers,users,updateuser}

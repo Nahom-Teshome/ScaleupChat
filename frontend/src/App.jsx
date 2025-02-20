@@ -9,14 +9,20 @@ import { useUserContext } from './hooks/useUserContext'
 
 export default function App(){
     const {user} = useUserContext()
+    // const [localUser, setLocalUser] = React.useState(null)
+    // React.useEffect(()=>{
+    //    setLocalUser(localStorage.getItem('user'))
+    //    console.log("localStorage user in APP.JSX: ", localStorage.getItem('user'))
+    // },[])
     return(
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home/>} >
-                    <Route path="chat" element={!user? <Navigate to="/login"/> :<ChatPage/>}/>
+                    <Route index element={<Login/>}/>
+                    <Route path="chat" element={!(user)? <Navigate to="/login"/> :<ChatPage/>}/>
                     <Route path='group' element={<CreateGroup/>}/>
-                    <Route path="login" element={!user?<Login/>:<Navigate to="/chat"/>}/>
-                    <Route path="signUp" element={!user?<SignUp/>:<Navigate to="/chat"/>}/>
+                    <Route path="login" element={!(user)?<Login/>:<Navigate to="/chat"/>}/>
+                    <Route path="signUp" element={!(user)?<SignUp/>:<Navigate to="/chat"/>}/>
                     <Route path="group" element={<CreateGroup/>}/>
                 </Route>
             </Routes>

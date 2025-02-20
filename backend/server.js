@@ -12,18 +12,34 @@ const {Server} = require('socket.io')
 const server = http.createServer(app)
 const cors = require('cors')
 const auth = require("./middleware/Auth")
+        const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173","https://chat.scaleuptutor.com","*"]
+// app.use(cors({
+//     // origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
+//     origin: allowedOrigin,// Allow requests only from this origin
+//     credentials:true,  
+//     allowedHeaders :['content-type','Authorization'],
+//     methods: ["GET", "POST","PATCH"],
+// }));
 app.use(cors({
-    origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
-    credentials:true,  // Allow requests only from this origin
-}));
+    origin:"https://chat.scaleuptutor.com",
+    credentials:true, 
+}))
 const  io = new Server(server,{
     cors:{
-        origin:process.env.ALLOWED_ORIGIN?.split(',') ||[], // Allow connections from your development server
-        // origin:"http://localhost:5173", // Allow connections from your development server
-        methods: ["GET", "POST"],
-        credentials: true,
-    }
-})
+        origin:"https://chat.scaleuptutor.com",
+        credentials:true, 
+    }})
+// const  io = new Server(server,{
+//     cors:{
+//     //    origin:process.env.ALLOWED_ORIGIN?.split(',') ||[], // Allow connections from your production server
+//         // origin:"http://localhost:5173", // Allow connections from your development server
+//         // origin:allowedOrigin,
+//         origin:allowedOrigin,
+//         methods: ["GET", "POST","PATCH"],
+//         credentials: true,
+//         allowedHeaders:['content-type','Authorization']
+//     }
+// })
 
 app.use(express.json())//allows json data to be received
 app.use(cookieParser())// parses incoming cookie data
@@ -31,9 +47,9 @@ app.use(cookieParser())// parses incoming cookie data
 //     // req.io = io
 //     next()
 // })
-app.get('/', (req, res) => {
-    console.log('Mobile Request')
-})
+// app.get('/', (req, res) => {
+//     console.log('Mobile Request')
+// })
 // io.on('connection ',(socket) => {
 //         console.log("User connected ",socket.id);
        

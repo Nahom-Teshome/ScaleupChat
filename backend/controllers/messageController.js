@@ -195,7 +195,7 @@ console.log("user does exits :",exist.name)
              // console.log("messagesIds added to a set to avoid duplication: ",users)
              const lastMessages = []
              const roomes =await myRooms(id)
-             console.log('MYROOMS IN GETLASTMESSAGE MESSAGE CCONTROLLER: ',roomes)
+             console.log('MYROOMS IN GETLASTMESSAGE() MESSAGE CCONTROLLER: ',roomes)
              if(myRooms )
                 {
                 let userRoomsId = []
@@ -225,8 +225,8 @@ console.log("user does exits :",exist.name)
                                 )
                     }
                 }
-             
-           console.log(" last messages: " ,lastMessages.map(last => (last.content)))
+            //   
+           console.log(" last messages: " ,lastMessages.map(last => (last.content? last.content:last.files  )))
         res.status(200).json({message:'Success',lastMessages})
     }
     catch(err){

@@ -5,8 +5,14 @@ import dotenv from 'dotenv'
 dotenv.config()
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: 'dist',
+    // Ensure the `_redirects` file is copied to the build output
+    assetsInclude: ['**/*.html', '**/*.txt'],
+  },
   server:{
     host:'0.0.0.0',
+    
     proxy: {
         '/api': {
             target:process.env.VITE_API_URL,

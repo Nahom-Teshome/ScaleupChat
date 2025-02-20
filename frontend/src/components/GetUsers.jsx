@@ -3,7 +3,9 @@ import React from 'react'
 import { useUserContext } from '../hooks/useUserContext'
 // import { useSocketContext } from '../hooks/useSocketContext'
 import { useLastMessageContext } from '../hooks/useLastMessageContext'
-export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessage,receivedMessage}){
+import ProfileCard from './ProfileCard'
+export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessage,receivedMessage,sentFiles,mobileView}){
+    
     const [users,setUsers] =React.useState(null)
     const {user} = useUserContext()
     const [lastMessages,setLastMessages] = React.useState([])
@@ -53,44 +55,47 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
                 }
                 const data = await res.json()
 
-            // console.log("Data from GetMyUsers: ",data)
+            console.log("Data from GetMyUsers: ",data)
                 setUsers(data.myUsers)
             }
             catch(err){
                 console.log("Error in getMyUsers: ",err.Error)
             }
         }
-        getMyUsers()
+        if(user){
+            getMyUsers()
+        }
     },[])
-
+const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
-        if(sentMessage){
-
-            setLastMessages((prev)=>{
+        if(sentMessage ){
+console.log("sentMessage in getUsers: ",sentMessage)
+           lastMessages? setLastMessages((prev)=>{
                 const newLastMessage = prev.map(last =>{ 
                     return last.sender_id===user._id && last.receiver_id ===selectedUser ||
                            last.receiver_id===user._id && last.sender_id ===selectedUser  ?
-                    {content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString()}:last
+                    {content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString(),files:[sentFiles]}:last
                     })
-                    // console.log("The new LAST message: ", newLastMessage)
+                    console.log("The new LAST message: ", newLastMessage)
                  return newLastMessage
-            })
+            }):setLastMessages([{content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString(),files:[sentFiles]}])
+        
         }
         // console.log("last message update sent messages: ",sentMessage)
-    },[sentMessage])
+    },[sentMessage,sentFiles])
     React.useEffect(()=>{
     //   ||last.sender_id===user._id && last.receiver_id ===selectedUser
-        if(receivedMessage){
+        if(receivedMessage ){
 
-            setLastMessages((prev)=>{
-            const newLastMessage = prev.map(last =>{
+          lastMessage? setLastMessages((prev)=>{
+            const newLastMessage =prev.map(last =>{
             
                 return last.receiver_id=== receivedMessage.receiver_id && last.sender_id===receivedMessage.sender_id || last.receiver_id === receivedMessage.sender_id && last.sender_id ===receivedMessage.receiver_id ?
                 receivedMessage:last
             })
                                 console.log("The new LAST message receive: ", newLastMessage)
               return newLastMessage
-        })
+        }):setLastMessages([receivedMessage])
     }
     // console.log("last message update receive messages: ",receivedMessage,)
     },[receivedMessage])
@@ -125,28 +130,39 @@ return(// SLOW LOADING ISSUE
                     
                     let online = isOnline && isOnline.includes(userI._id) ? true: false
                     return userI._id !== user._id && (<button className={userI._id === selectedUser? 'current-user':'user'}
-                        onClick={()=>{fetchMessages(userI._id, userI.name.toUpperCase())}} 
+                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView('Mobile called')}} 
                         key={i} >  
-                                <div className="user_info">
-                                    {online?
-                                    <div className="user_online" ></div>:
-                                    <div className="user_offline" ></div>}
+                         <ProfileCard classname='user-list-profile'>
+                                        <img  className="profilePic-img" src={userI.imageUrl} alt="" />
+                                        {online?
+                                        <div className="user_online  online-info" ></div>:
+                                        <div className="user_offline  offline-info" ></div>}
+                                    </ProfileCard>
+                                <div className="user_info">   
                                     <h4 className="user-name">{upperCasing(userI.name)}</h4>
-                                 </div>
-                                    <div className='user-latest-message'>{   
-                   lastMessages   && lastMessages.map((last,i)=>{
-                        if(last.room_id === undefined || last.room_id === 'client-to-client')//ENSURES that users who are senders don't have room messages previewing
-                        {
-                            const time = convertToDate(last.createdAt)
-                            return (last.sender_id === userI._id || last.receiver_id === userI._id) &&
-                            <div key={i} className='latest-message-wrapper'>
-                               <p> {last.content} </p>
-                                <p className='time'>{time} </p>
-                            </div>
-                            
-                        }
-                     })   
+
+                                     <div className='user-latest-message'>{   
+                                         lastMessages  ? lastMessages.map((last,i)=>{
+                                            if(last.room_id === undefined || last.room_id === 'client-to-client')//ENSURES that users who are senders don't have room messages previewing
+                                                {
+                                                    const time = convertToDate(last.createdAt)
+                                                    return (last.sender_id === userI._id || last.receiver_id === userI._id) &&
+                                                    <div key={i} className='latest-message-wrapper'>
+                                                        <div className="latest-message-content">
+                                                            <p> {last.content?`${last.content.slice(0,30)} ...`:last.files[0].resource_type} </p>
+                                                        </div>
+                                                        <p className='time'>{time} </p>
+                                                    </div>
+                                
+                                                }
+                                         })  :<div className="latest-message-wrapper">
+                                         <div className="latest-message-content">
+                                         <p>...</p>
+                                         </div>
+                                   </div> 
                                     }</div>
+                                </div>
+                                   
                                         
                         </button>
                         )

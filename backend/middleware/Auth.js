@@ -11,6 +11,7 @@ async function auth(req,res,next){
     
     try{
         if(!cookieToken){
+            console.log("No cookies in AUTH")
             throw Error("No cookies found")
         }
         // given that the cookies exist or sent from the frontend. We use "jwt.verify" to collect the info stored the token(the ones we signed it with).They are _id and role
