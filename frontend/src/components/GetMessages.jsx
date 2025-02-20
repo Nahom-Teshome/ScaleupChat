@@ -1,15 +1,16 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { useUserContext } from '../hooks/useUserContext'
 import { AiOutlineDownload } from "react-icons/ai";
 // import ProfileCard from './ProfileCard.jsx'
+
+
 export default function GetMessages({selectedUserID,receivedMessage,sentMessage,roomID,sentFiles}){
+  
     const [messages,setMessages] = React.useState([])
     const {user} = useUserContext()
-    // const [tryMessages, setTryMessages] = React.useState([])
-    // const [sender_id, setSender_id]= React.useState(null)
-    // const [roomId, setRoomId]= React.useState(null)
+    
     React.useEffect(()=>{
-            // setSender_id(selectedUserID)
           
             const fetchMessages=async()=>{
 
@@ -85,6 +86,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
         
         },[roomID])
 // console.log("Get MESSAGES WAS TRIGGERED: logged in user", user)
+
        React.useEffect(()=>{
            // displaying the message that current-user sent to self
            console.log("IN sentMessages useEffect : ","sentFiles", sentFiles, " sentMessages ",sentMessage)
@@ -160,4 +162,29 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                             }
         </>
     )
+    
 }
+
+GetMessages.PropTypes ={
+    selectedUserID:PropTypes.shape(
+        {
+         name:PropTypes.string.isRequired
+    }),
+    receivedMessage:PropTypes.shape(
+        { 
+            sender_id:PropTypes.number,
+            room_id:PropTypes.number
+        }
+    ),
+    sentMessage:PropTypes.string,
+    roomID:PropTypes.number,
+    sentFiles:PropTypes.shape(
+        {
+            public_id:PropTypes.string,
+            secure_url:PropTypes.string,
+            filename:PropTypes.string,
+            format:PropTypes.string,
+            resource_type:PropTypes.string,
+            bytes:PropTypes.number
+        }
+    )}

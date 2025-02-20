@@ -167,6 +167,7 @@ console.log('inside cloudinaryUpload')
         // console.log("REceivedmessages: ", receivedMessage)
         const getSelectedUserId =(id,name,imageUrl)=>{
           setNewFile(null)
+          setMoreClicked(false)
     // console.log("ID OF SELECTED uSER: ",id, 'name ', name)
           if(socket){
       // console.log("joining Own room")
@@ -179,6 +180,7 @@ console.log('inside cloudinaryUpload')
           const getRoomId=(id,participants,groupName,groupImageUrl)=>{
             setNewFile(null)//so that old files are overwritten when a new  group is selected
             setRoomId(id)
+            setMoreClicked(false)
             if(socket){
       //  console.log("joining Group Room")
               socket.emit('joinRoom',id)
