@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useUserContext } from '../hooks/useUserContext'
 import { AiOutlineDownload } from "react-icons/ai";
-// import ProfileCard from './ProfileCard.jsx'
+import {useQuery} from '@tanstack/react-query'
 
 
 export default function GetMessages({selectedUserID,receivedMessage,sentMessage,roomID,sentFiles}){
