@@ -84,7 +84,7 @@ async function receiveMessage(req,res){
                         {sender_id:senderId,receiver_id:receiverId},
                         {receiver_id: senderId, sender_id: receiverId },
                 ],
-                    }).sort({createdAt:-1})//sort the messages by time of creation .
+                    }).sort({createdAt:-1}).limit(20)//sort the messages by time of creation .
                     if(message.length < 1){// if messages array is empty throw an error
                 //   console.log('You have no messages from user')
                         throw Error("You have no messages from user")
@@ -104,7 +104,7 @@ async function receiveMessage(req,res){
                 throw Error("You haven't been talking to self")
             }
         
-            const message = await Message.find({room_id:roomId }).sort({createdAt:-1})//sort the messages by time of creation .
+            const message = await Message.find({room_id:roomId }).sort({createdAt:-1}).limit(20)//sort the messages by time of creation .
                     if(message.length < 1 || !message){// if messages array is empty throw an error
                 //  console.log("you have no messages")
                         throw Error("You have no messages from user")
@@ -195,7 +195,7 @@ console.log("user does exits :",exist.name)
              // console.log("messagesIds added to a set to avoid duplication: ",users)
              const lastMessages = []
              const roomes =await myRooms(id)
-             console.log('MYROOMS IN GETLASTMESSAGE() MESSAGE CCONTROLLER: ',roomes)
+            //  console.log('MYROOMS IN GETLASTMESSAGE() MESSAGE CCONTROLLER: ',roomes)
              if(myRooms )
                 {
                 let userRoomsId = []
@@ -213,7 +213,7 @@ console.log("user does exits :",exist.name)
                 {
                     if( userIDs[i] !== undefined && userIDs[i]!== id)
                     {
-                        console.log("ids of users: ",userIDs[i])
+                        // console.log("ids of users: ",userIDs[i])
 
                         lastMessages.push(await Message.findOne({
                                 $or:[
@@ -226,7 +226,7 @@ console.log("user does exits :",exist.name)
                     }
                 }
             //   
-           console.log(" last messages: " ,lastMessages.map(last => (last.content? last.content:last.files  )))
+        //    console.log(" last messages: " ,lastMessages.map(last => (last.content? last.content:last.files  )))
         res.status(200).json({message:'Success',lastMessages})
     }
     catch(err){

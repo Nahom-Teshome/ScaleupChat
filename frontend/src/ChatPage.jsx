@@ -11,12 +11,17 @@ import { BsPaperclip } from "react-icons/bs";
 import { IoChevronBack } from "react-icons/io5";
 import {  FaLocationArrow } from "react-icons/fa";
 import { useMediaQuery } from './hooks/useMediaQuery';
+import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-query'
  function ChatPage(){
   // const [isConnected, setIsConnected] = React.useState(false)
+  const queryClient = useQueryClient()
   const [message, setMessage] = React.useState('')
   const [file , setFile] = React.useState(null)
   const [newMessage, setNewMessage] = React.useState('')
   const [receivedMessage, setReceivedMessage] = React.useState('')
+  const [loadMessage,setLoadMessage] = React.useState('')
+  const [oldMessage,setOldMessage] = React.useState('')
+  const loadingRef = React.useRef(false)
   const [selectedUser,setSelectedUser] = React.useState({id:null,name:[]})
   const [roomId, setRoomId] = React.useState(null)
   const [moreClicked,setMoreClicked] = React.useState(false)
@@ -29,63 +34,148 @@ import { useMediaQuery } from './hooks/useMediaQuery';
   const [miniImage , setMiniImage] = React.useState(null)
   const [usersShown, setUsersShown] = React.useState(true)
   const [isMobile, setIsMobile] = React.useState(false)
-
+  const pageRef = React.useRef(1)
+  const scrollRef = React.useRef(null)
    let screenSize = useMediaQuery("(max-width: 450px)")
   const newSocket = socket
   console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
+
+  // React.useEffect(()=>{
+  //   console.log("useEffect get cache data: looking for selectedUserId: ", selectedUser.id)
+  //   const cacheQuery =queryClient.getQueryCache().getAll()
+  //   // const cacheQuery =queryClient.getQueryData(['data',selectedUser.id])
+  //    console.log('Query Data : ', cacheQuery)
+
+  // },[selectedUser.id])
   React.useEffect(()=>{
-   
-      try{
-        console.log('subscription use effect')
-              if(roomId){
-                newSocket.emit("joinRoom",roomId)
-              }
-              if(!roomId){
+    
+      console.log('subscription use effect')
+      // console.log("this is room Id: ")
+      const handleReceiveMessage=(message)=>
+        {//listen for event before the event is emitted
+        
+              console.log("receiving messages that were sent from other users: ",message)
+              const isRoomMessage = message.room_id !== 'client-to-client'&& message.room_id !== null
+
+              console.log("Message Received looking in cache: ",queryClient.getQueryData(['data',isRoomMessage?message.room_id :message.sender_id]))
+              setReceivedMessage(message)
+              // queryClient.setQueryData(['data',isRoomMessage? message.room_id: message.sender_id],(oldMessages)=>{
+              //   if(!oldMessages){
+              //         console.warn("No old messages in cache, adding new one: ",message)
+              //       // return[ message]
+              //     }
+              //    if(oldMessages){
+              //         console.log("Old Message found in cache appending new message:",[...oldMessages])
+              //       return [message,...oldMessages]
+              //     }
+              //   })
+      
+        }
+       const  handleLoadGroupMessages=(message)=>
+          {//Make sure the listener is listening for the event before the event is emitted because it is only emitted once 
+            console.log("loading new messages for room: ", roomId, " Messages: ",message)
+            setOldMessage('')
+            setLoadMessage(message)
+          
+          }
+        const handleLoadUserMessages =(message)=>{
+          setOldMessage('')
+          setLoadMessage(message)
+      }
+      newSocket.on('receiveMessage',handleReceiveMessage)
+
+      if(roomId !== 'client-to-client' && roomId !== null)//when roomId exists
+         {
+            console.log("Joined room from subscription useEffect: ",roomId)
+            newSocket.on('loadMessages',handleLoadGroupMessages)
+            newSocket.emit("joinRoom",roomId) 
+          }
+                  
+      if(!roomId || roomId === 'client-to-client')//making sure roomId doesn't exist
+          {
+            if(selectedUser.id)//then we can check for the value of selectedUser.id
+              {
+                const selectedUserId = selectedUser.id
+                console.log("selectedUser.id in subscription: ",selectedUserId)
+                newSocket.emit("getSelectedUser",selectedUserId)
+                console.log("loading new messages for user: ", selectedUserId, " Messages: ",message)
+                newSocket.on('loadMessages',handleLoadUserMessages)  
                 newSocket.emit("joinRoom")
               }
-          // console.log("this is room Id: ")
-        
-            newSocket.on('receiveMessage',(message)=>{
-              console.log("receiving messages that were sent from other users: ",message)
-                setReceivedMessage(message)
-              
-          
-            })
-            }
-            catch(err){
-              console.log("UseEffect Error: ",  err.message)
             }
            
-          
-
             return () => {
-              // newSocket.disconnect();
-          }
-          },[])
+              newSocket.off('loadMessages',handleLoadUserMessages);
+              newSocket.off('loadMessages',handleLoadGroupMessages);
+              newSocket.off('receiveMessage',handleReceiveMessage);
+            }
+          },[roomId,selectedUser.id])
 
+          const handleScroll=()=>{
+                const {clientHeight, scrollTop, scrollHeight} = scrollRef.current
+                // console.log(`(Math.ceil(-scrollTop )${Math.ceil(-scrollTop )} +clientHeight ${clientHeight} == (scrollHeight) ${scrollHeight} ` )
+                if((Math.ceil(-scrollTop ) +clientHeight) == (scrollHeight) && !loadingRef.current)
+                  {// chatContainer not has access to the chat-wrapper div's scroll property
+                    console.log("Scrolled to the top!! pageCount: ",pageRef.current, "loading state: ",loadingRef.current )
+                    loadingRef.current= true
+                      loadOlderMessages()
+                  }
+          }
+
+          const loadOlderMessages=async()=>{
+        
+            
+               newSocket.off('olderMessages')
+               await newSocket.on('olderMessages',(oldMessage)=>
+                {//event listener for old messages if triggered 
+                  console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",loadingRef.current , "roomId: ",roomId)
+                   loadingRef.current= false
+
+                   setOldMessage(oldMessage)
+
+                   pageRef.current += 1
+                   
+                  })     
+                
+                  if(loadingRef.current){
+                    newSocket.emit('loadMoreMessages',{roomId, page:pageRef.current})
+                 }
+          }
+          React.useEffect(()=>{
+            pageRef.current = 1
+            const chatContainer = scrollRef.current//points to the chat-wrapper div
+            // console.log("scroll behaviour useEffect:scrollHeight: ",chatContainer.scrollHeight,"ClientHeight",chatContainer.clientHeight)
+            // console.log("Scroll Position: scrollTop", chatContainer.scrollTop);
+              if(!chatContainer ) return;
+            
+              chatContainer.addEventListener('scroll', handleScroll)//assigning an eventListener to the chat-wrapper div through chatContainer by  refference 
+
+              return ()=>{
+                chatContainer.removeEventListener('scroll', handleScroll)
+              }
+          },[roomId])
           React.useEffect(()=>{
             let onlineUsersCount = new Set()
-            console.log("No of oNline USERS useEffect")
+            // console.log("No of oNline USERS useEffect")
           
             if(selectedUser && onlineUsers)
               {
-                console.log("selectedUser: ", selectedUser)
+                // console.log("selectedUser: ", selectedUser)
               selectedUser.name.map(user=>{
                 return ( onlineUsers.includes(user.id))? onlineUsersCount.add(user.id):console.log("Id Not in online users")
               })
               let countArray = [...onlineUsersCount]
-console.log("online users in chat : ", onlineUsers)
+// console.log("online users in chat : ", onlineUsers)
               setNoOfOnlineUsers(countArray.length)
-              console.log("selectedUser.name is included in onlineUsers: ", countArray.length)
+              // console.log("selectedUser.name is included in onlineUsers: ", countArray.length)
                 
               }
               
               
-              console.log("No of oNline USERS useEffect: ", noOfOnlineUsers)
+              // console.log("No of oNline USERS useEffect: ", noOfOnlineUsers)
               
             },[onlineUsers,selectedUser])
-            
-            // console.log(".env files",import.meta.env.VITE_CLOUDNAME)
+          
             const cloudinaryUpload= async(file)=>{
 console.log('inside cloudinaryUpload')
               const formData = new FormData()
@@ -110,7 +200,7 @@ console.log('inside cloudinaryUpload')
             }
             React.useEffect(()=>{//image or file shouldn't display if user clicks outside of chat-input
               const clickOutside=(event)=>{
-                console.log("Clicked outside of CHAT")
+                // console.log("Clicked outside of CHAT")
                 if(file &&  !event.target.closest('.chat-form')){
                   setMiniImage(null)
                   setFile(null)
@@ -126,12 +216,12 @@ console.log('inside cloudinaryUpload')
               e.preventDefault()
               setNewFile(null)
             // setNewFile({secure_url:URL.createObjectURL(file[0])})
-            console.log("file: ", file)
+            // console.log("file: ", file)
             // const fileInfo = await Promise.all(file.map(cloudinaryUpload))
          
               const fileInfo =file ? await(cloudinaryUpload(file[0])): null
-            file&&console.log("Cloudinary data fileInfo: ", fileInfo)
-            file&&console.log("Cloudinary data fileInfo: ", fileInfo.secure_url)
+            // file&&console.log("Cloudinary data fileInfo: ", fileInfo)
+            // file&&console.log("Cloudinary data fileInfo: ", fileInfo.secure_url)
             setNewFile( fileInfo)
 
             const fileMessage = fileInfo? {
@@ -169,10 +259,10 @@ console.log('inside cloudinaryUpload')
           setNewFile(null)
           setMoreClicked(false)
     // console.log("ID OF SELECTED uSER: ",id, 'name ', name)
-          if(socket){
+      //     if(socket){
       // console.log("joining Own room")
-            socket.emit('joinRoom')
-          }
+      //       socket.emit('joinRoom')
+      //     }
           setSelectedUser({name:[name],id,imageUrl})//passing name as an array bc in room participants name is an array and i have to map through it
           setRoomId(null)
           
@@ -180,15 +270,17 @@ console.log('inside cloudinaryUpload')
           const getRoomId=(id,participants,groupName,groupImageUrl)=>{
             setNewFile(null)//so that old files are overwritten when a new  group is selected
             setRoomId(id)
+            setOldMessage('')
             setMoreClicked(false)
-            if(socket){
-      //  console.log("joining Group Room")
-              socket.emit('joinRoom',id)
-            }
+            pageRef.current = 1
+      //       if(socket){
+      //  console.log("joining Group Room pageRef.current: ",pageRef.current)
+      //         socket.emit('joinRoom',id)
+      //       }
             const members = participants.map(participant =>({name:upperCasing(participant.name),id:participant.id,imageUrl:participant.imageUrl}))
             setSelectedUser({name:members,id:id,groupName,imageUrl:groupImageUrl})
           
-            console.log("Room id IN CHAT: ",id , 'SelectedUserId set to group id')
+            // console.log("Room id IN CHAT: ",id , 'SelectedUserId set to group id')
           }
 
 
@@ -210,10 +302,10 @@ console.log('inside cloudinaryUpload')
           //   console.log("TYPING")
           // }
           React.useEffect(()=>{
-            console.log("Checking Screen Size in Chat")
+            // console.log("Checking Screen Size in Chat")
             setIsMobile(screenSize)
           },[screenSize])
-console.log("Current LOGGED IN USER: ", user)
+console.log("Current LOGGED IN USER: ", user._id,user.name)
        
   return (
         <div className="main-container">
@@ -251,7 +343,7 @@ console.log("Current LOGGED IN USER: ", user)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
-                                mobileView={screenSize? ()=>{setUsersShown(false)}:null}
+                                mobileView={screenSize?()=>{setUsersShown(false)}:null}
                                 />
                     
                 </div>
@@ -297,13 +389,15 @@ console.log("Current LOGGED IN USER: ", user)
                                          
                                   
               </div>}
-                <div className="chat-wrapper">
+                <div className="chat-wrapper" ref={scrollRef}>
                 
                     {(selectedUser.id || roomId)? <GetMessages 
                                                   selectedUserID={selectedUser}
                                                   sentMessage={newMessage}
                                                   sentFiles={newFile}
                                                   receivedMessage={receivedMessage}
+                                                  loadMessage ={loadMessage}
+                                                  oldMessages={oldMessage}
                                                   roomID={roomId}
                                                   />:
                       <p>Select a user</p>}

@@ -208,7 +208,7 @@ async function getMyUsers(req,res){
                 }
                 }// the loop allows me to fetch all the users and their specific fields and store it in an array
          
-console.log("my users IN GetmyUsers controller : ", myUsers)
+// console.log("my users IN GetmyUsers controller : ", myUsers)
             res.status(200).json({message:'Success',myUsers})
         }
         catch(err){

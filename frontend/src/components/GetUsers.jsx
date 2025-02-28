@@ -37,7 +37,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
         }
         // getLastMessages()
         setLastMessages(lastMessage)
-        console.log("last Messages in user: ",lastMessage)
+        // console.log("last Messages in user: ",lastMessage)
 
     },[lastMessage])
 
@@ -55,7 +55,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
                 }
                 const data = await res.json()
 
-            console.log("Data from GetMyUsers: ",data)
+            // console.log("Data from GetMyUsers: ",data)
                 setUsers(data.myUsers)
             }
             catch(err){
@@ -69,14 +69,14 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
 const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
         if(sentMessage ){
-console.log("sentMessage in getUsers: ",sentMessage)
+// console.log("sentMessage in getUsers: ",sentMessage)
            lastMessages? setLastMessages((prev)=>{
                 const newLastMessage = prev.map(last =>{ 
                     return last.sender_id===user._id && last.receiver_id ===selectedUser ||
                            last.receiver_id===user._id && last.sender_id ===selectedUser  ?
                     {content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString(),files:[sentFiles]}:last
                     })
-                    console.log("The new LAST message: ", newLastMessage)
+                    // console.log("The new LAST message: ", newLastMessage)
                  return newLastMessage
             }):setLastMessages([{content:sentMessage,sender_id:user._id,receiver_id:selectedUser,createdAt:new Date().toISOString(),files:[sentFiles]}])
         
@@ -93,7 +93,7 @@ console.log("sentMessage in getUsers: ",sentMessage)
                 return last.receiver_id=== receivedMessage.receiver_id && last.sender_id===receivedMessage.sender_id || last.receiver_id === receivedMessage.sender_id && last.sender_id ===receivedMessage.receiver_id ?
                 receivedMessage:last
             })
-                                console.log("The new LAST message receive: ", newLastMessage)
+                                // console.log("The new LAST message receive: ", newLastMessage)
               return newLastMessage
         }):setLastMessages([receivedMessage])
     }
@@ -130,7 +130,7 @@ return(// SLOW LOADING ISSUE
                     
                     let online = isOnline && isOnline.includes(userI._id) ? true: false
                     return userI._id !== user._id && (<button className={userI._id === selectedUser? 'current-user':'user'}
-                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView('Mobile called')}} 
+                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView}} 
                         key={i} >  
                          <ProfileCard classname='user-list-profile'>
                                         <img  className="profilePic-img" src={userI.imageUrl} alt="" />

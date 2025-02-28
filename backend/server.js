@@ -57,26 +57,16 @@ app.use(cookieParser())// parses incoming cookie data
 //             console.log("A user disconnected:", socket.id);
 //           });
 //   })
-
+app.use('/get',()=>{console.log("get Fired")})
 app.use('/api/user',userRoutes)// this is the route for users (signup,logging ...)
 app.use('/api/message', messageRoutes)// this is the route for messages (send,receive ...)
 app.use('/api/room/',roomRoutes)
 
-io.on('connection', initializeSocket)
+io.on('connection', (socket)=>{initializeSocket(socket,io)})
 
 
 const port=process.env.PORT || 3000
-server.listen(port,'0.0.0.0', () => {
-    mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
-    .then(()=>{
-        console.log('Connected to MONGO and listening on port: ',port)
-    })
-    .catch((error)=>{
-        console.log('Error in server: ',error)
-    }
-    )
-  });
-// app.listen(port,()=>{// start listening for request on port 3000
+// server.listen(port,'0.0.0.0', () => {
 //     mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
 //     .then(()=>{
 //         console.log('Connected to MONGO and listening on port: ',port)
@@ -85,5 +75,15 @@ server.listen(port,'0.0.0.0', () => {
 //         console.log('Error in server: ',error)
 //     }
 //     )
+//   });
+server.listen(port,()=>{// start listening for request on port 3000
+    mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
+    .then(()=>{
+        console.log('Connected to MONGO and listening on port: ',port)
+    })
+    .catch((error)=>{
+        console.log('Error in server: ',error)
+    }
+    )
     
-// })
+})

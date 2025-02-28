@@ -22,7 +22,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                 }
 
                 const data = await res.json()
-    console.log("Groupj Fetch was Successfull: ", data)
+    // console.log("Groupj Fetch was Successfull: ", data)
                 setGroups(data.rooms)
                 
                 }
@@ -38,12 +38,12 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
     },[])
     
     React.useEffect(()=>{
-        console.log("last Message in GetGroup: ",lastMessage)
+        // console.log("last Message in GetGroup: ",lastMessage)
         setLastMessages(lastMessage)
     },[lastMessage])
 
     React.useEffect(()=>{
-console.log("sent message in gerGroups: ",sentMessage)
+// console.log("sent message in gerGroups: ",sentMessage)
 
         lastMessage ? setLastMessages((prev)=>{
             const newLastMessage= prev.map(last=>{
@@ -54,7 +54,7 @@ console.log("sent message in gerGroups: ",sentMessage)
         
     },[sentMessage,sentFiles])
     React.useEffect(()=>{
-console.log("received message in geTGroups: ",receivedMessage)
+// console.log("received message in geTGroups: ",receivedMessage)
 
         lastMessage ? setLastMessages((prev)=>{
             const newLastMessage=prev.map(last=>{
@@ -93,7 +93,7 @@ console.log("received message in geTGroups: ",receivedMessage)
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
-                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView()}}
+                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView}}
                         >
                             <ProfileCard classname="user-list-profile">
                                 <img className="profilePic-img" src={group.imageUrl} alt="" />

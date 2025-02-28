@@ -13,6 +13,6 @@ export function useMediaQuery(query){
 
         return ()=>{ media.removeEventListener('change',listener)}
     },[query])
-console.log("Media query return: ",matches)
+// console.log("Media query return: ",matches)
     return matches
 }

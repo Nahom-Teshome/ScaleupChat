@@ -5,18 +5,23 @@ import App from './App.jsx'
 import UserContextProvider from './context/UserContextProvider.jsx'
 import SocketContextProvider from './context/SocketContextProvider.jsx'
 import LastMessageContextProvider from './context/LastMessgeContextProvider.jsx'
+import { Query, QueryClient,QueryClientProvider } from '@tanstack/react-query'
 import {ErrorBoundary} from 'react-error-boundary'
 
+
+const queryClient =new QueryClient()
 createRoot(document.getElementById('root')).render(
  <ErrorBoundary fallback={<div>An Error Occured</div>}>
   <StrictMode>
-    <UserContextProvider>
-      <SocketContextProvider>
-        <LastMessageContextProvider>
-          <App />
-        </LastMessageContextProvider>
-      </SocketContextProvider>
-    </UserContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserContextProvider>
+        <SocketContextProvider>
+          <LastMessageContextProvider>
+            <App />
+          </LastMessageContextProvider>
+        </SocketContextProvider>
+      </UserContextProvider>
+    </QueryClientProvider>
   </StrictMode>
   </ErrorBoundary>
 )

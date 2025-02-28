@@ -4,7 +4,7 @@ import { useUserContext } from '../hooks/useUserContext'
 
 
     export const lastMessageReducer =(action,state )=>{
-        console.log("LastMessageReducer called from : ", action.Location)
+        // console.log("LastMessageReducer called from : ", action.Location)
         switch(action.type){
             case 'LOAD':
                 return {lastMessage:action.payload}
@@ -31,9 +31,9 @@ export default function LastMessageContextProvider({children}){
                     console.log('Error in !res.ok: ',errorData)
                     throw Error(errorData)
                 }
-                console.log("Getting all LastMessage data success!!!")
+                // console.log("Getting all LastMessage data success!!!")
                 const data = await res.json()
-                console.log("last Messages: ",data)
+                // console.log("last Messages: ",data)
                dispatch({type:"LOAD",payload:data.lastMessages})
             }
             catch(err){

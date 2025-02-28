@@ -37,7 +37,7 @@ export default function SocketContextProvider({children}){
                    user&& newSocket.emit('userOnline',(user._id))
 
                     newSocket.on('online',(arg)=>{
-            console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id)
+            // console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id)
                         dispatch({type:'ADD_ONLINE_USER', payload:arg})
                     })
                 })

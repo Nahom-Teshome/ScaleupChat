@@ -1,15 +1,45 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import propTypes from 'prop-types'
 import { useUserContext } from '../hooks/useUserContext'
 import { AiOutlineDownload } from "react-icons/ai";
-import {useQuery} from '@tanstack/react-query'
+import {useQuery, useQueryClient   } from '@tanstack/react-query'
 
 
-export default function GetMessages({selectedUserID,receivedMessage,sentMessage,roomID,sentFiles}){
-  console.log("FROM BRANCH ******CACHING****!!!")
+export default function GetMessages({selectedUserID,receivedMessage,loadMessage,oldMessages,sentMessage,roomID,sentFiles}){
+//   console.log("FROM BRANCH ******CACHING****!!!",selectedUserID.id)
+   
     const [messages,setMessages] = React.useState([])
     const {user} = useUserContext()
-    
+    const {data,isLoading,error}=[1,false,false]
+    // const {data,isLoading,error}= useQuery(
+    //     {
+    //         queryKey:['data',roomID?roomID:selectedUserID.id],
+    //         queryFn:async ()=>{
+    //                     const res = roomID?await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/group/${roomID}`,{
+    //                         method:'GET',
+    //                         credentials:'include'
+    //                     }): await fetch(`${import.meta.env.VITE_API_URL}/api/message/receive/one2one/${selectedUserID.id}`,{
+    //                         method:'GET',
+    //                         credentials:'include'
+    //                     })
+    //                     if(!res.ok){
+    //                         const data = await res.json();
+    //                         console.log("New Error in fetch Messages: ",data.Error)
+    //                          throw new Error(data.Error)}
+    //                        const data = await res.json()
+    //                     console.log("Message Received from SERVER: ",data)
+    //                         return data.message
+    //                  },
+    //         enabled: selectedUserID.id?true:false,
+    //         // keepPreviousData:true,
+    //         staleTime: 1000 * 60 * 5,
+    //     }
+    // )
+    // React.useEffect(()=>{
+    //     console.log("SET Message UseEFFFECT ")
+    // //  data&& setMessages(data)
+    // //  datas && setMessages(datas)
+    // },[data])
     React.useEffect(()=>{
           
             const fetchMessages=async()=>{
@@ -43,7 +73,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                  }
                  if(selectedUserID && !roomID){//SelectedUserId is not only used to fetch messages for the selected user but also to properly create a message object state in setMessages() so here roomID must be null for this function to fire
 
-                     fetchMessages()
+                    //  fetchMessages()
                     }
         
         },[selectedUserID])
@@ -81,7 +111,7 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                  }
                  if(roomID){
 
-                     fetchMessages()
+                    //  fetchMessages()
                     }
         
         },[roomID])
@@ -89,28 +119,58 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
 
        React.useEffect(()=>{
            // displaying the message that current-user sent to self
-           console.log("IN sentMessages useEffect : ","sentFiles", sentFiles, " sentMessages ",sentMessage)
-                setMessages(prev=>{
-
+        //    console.log("IN sentMessages useEffect : ","sentFiles", sentFiles, " sentMessages ",sentMessage, 'messagest: ',messages)
+               messages.length> 0? setMessages(prev=>{
                     return(
                         [{content:sentMessage,sender_id:user._id,receiver_id:selectedUserID.id,createdAt:new Date().toISOString(),files:sentFiles?[sentFiles]:null},...prev]//current-user is the sender here and receiver_id will only have a value if the messaging is one to one , if it is a group chat it will be null
                     )
-                })
+                }):setMessages([{content:sentMessage,sender_id:user._id,receiver_id:selectedUserID.id,createdAt:new Date().toISOString(),files:sentFiles?[sentFiles]:null}])
 
         },[sentMessage,sentFiles])
         React.useEffect(()=>{
-            
             console.log("useEffect in GetMESSAGES. RECEIVED MESSAGES: ",receivedMessage)
             console.log("useEffect in GetMESSAGES. RECEIVED MESSAGES selected user: ",selectedUserID.id)
-            if(receivedMessage && (receivedMessage.sender_id === selectedUserID.id || receivedMessage.room_id === selectedUserID.id)){//to make sure that the selected user only gets his/her messages
+            if(receivedMessage)
+            {
+                if(receivedMessage.sender_id === selectedUserID.id || receivedMessage.room_id === selectedUserID.id)
+                {//to make sure that the selected user only gets his/her messages
 
-                setMessages(prev=>{
-                    return  (
-                        [receivedMessage,...prev]
-                    )
-                })
+                    console.log("messsage belongs to user room!!")
+                    messages.length>0? setMessages(prev=>{
+                        return  (
+                          [receivedMessage,...prev]
+                        )
+                    }):setMessages([receivedMessage])
+                }
             }
         },[receivedMessage])
+        React.useEffect(()=>{
+            if(loadMessage)
+            {
+                console.log("Loading new Message in GetMessages(): ",loadMessage)
+
+                if(((loadMessage[0].sender_id === selectedUserID.id && loadMessage[0].receiver_id === user._id)||(loadMessage[0].sender_id === user._id && loadMessage[0].receiver_id === selectedUserID.id)) || loadMessage[0].room_id === selectedUserID.id)
+                {
+                    console.log("Messsage Belongs to user")
+                                        setMessages(loadMessage)
+                }
+            }
+        },[loadMessage])
+        React.useEffect(()=>{
+            if(oldMessages && oldMessages.length > 0){
+                console.log("selectedUser.id: ",selectedUserID.id," roomID: ",roomID)
+                if(oldMessages[0].room_id === roomID ||
+                    (oldMessages[0].sender_id=== selectedUserID.id && oldMessages[0].receiver_id === user._id || 
+                     oldMessages[0].sender_id === user._id && oldMessages[0].receiver_id === selectedUserID.id
+                    ))
+                {
+                    console.log("OldMessages UseEffect in GetMessages: ",oldMessages, messages.length)
+                      setMessages.length> 0 ? setMessages(prev=>{
+                        return[...prev,...oldMessages]
+                    }):console.warn("Messages in GetMessages() isn't populated yet. can't load oldMessages")
+                }
+            }
+        },[oldMessages])
 
          const formatDate=(createdAt)=>{
                   const date =  new Date(createdAt)
@@ -125,8 +185,8 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                 }
             
     return(
-        <>
-            {messages.length>0?
+      !error? <>
+            {messages.length >=1 && !isLoading?
                   messages.map((text,ind)=>{   
                     const time = formatDate(text.createdAt)
                     const groupname =selectedUserID.name.find(name =>(name.id=== text.sender_id))
@@ -160,31 +220,32 @@ export default function GetMessages({selectedUserID,receivedMessage,sentMessage,
                               )}) :
                               <div>looking for messages</div>
                             }
-        </>
+        </>:
+        <div>{error }:   Fetching MessageData</div>
     )
     
 }
 
-GetMessages.PropTypes ={
-    selectedUserID:PropTypes.shape(
-        {
-         name:PropTypes.string.isRequired
-    }),
-    receivedMessage:PropTypes.shape(
-        { 
-            sender_id:PropTypes.number,
-            room_id:PropTypes.number
-        }
-    ),
-    sentMessage:PropTypes.string,
-    roomID:PropTypes.number,
-    sentFiles:PropTypes.shape(
-        {
-            public_id:PropTypes.string,
-            secure_url:PropTypes.string,
-            filename:PropTypes.string,
-            format:PropTypes.string,
-            resource_type:PropTypes.string,
-            bytes:PropTypes.number
-        }
-    )}
+// GetMessages.propTypes ={
+//     selectedUserID:propTypes.shape(
+//         {
+//          name:propTypes.string.isRequired
+//     }),
+//     receivedMessage:propTypes.shape(
+//         { 
+//             sender_id:propTypes.number,
+//             room_id:propTypes.number
+//         }
+//     ),
+//     sentMessage:propTypes.string,
+//     roomID:propTypes.number,
+//     sentFiles:propTypes.shape(
+//         {
+//             public_id:propTypes.string,
+//             secure_url:propTypes.string,
+//             filename:propTypes.string,
+//             format:propTypes.string,
+//             resource_type:propTypes.string,
+//             bytes:propTypes.number
+//         }
+//     )}
