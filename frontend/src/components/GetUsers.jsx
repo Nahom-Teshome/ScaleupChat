@@ -4,12 +4,15 @@ import { useUserContext } from '../hooks/useUserContext'
 // import { useSocketContext } from '../hooks/useSocketContext'
 import { useLastMessageContext } from '../hooks/useLastMessageContext'
 import ProfileCard from './ProfileCard'
+
 export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessage,receivedMessage,sentFiles,mobileView}){
     
     const [users,setUsers] =React.useState(null)
     const {user} = useUserContext()
     const [lastMessages,setLastMessages] = React.useState([])
     const {lastMessage} = useLastMessageContext()
+    const [unreadMessages,setUnreadMessages] = React.useState([''])
+    const [unreadCount,setUnreadCount] = React.useState([])
     // const {onlineUsers} = useSocketContext()
     React.useEffect(()=>{
         const getLastMessages =async()=>{
@@ -57,6 +60,8 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
 
             // console.log("Data from GetMyUsers: ",data)
                 setUsers(data.myUsers)
+                const newUnread= data.myUsers.map((user)=>{ return {id:user._id, count:0}})
+                setUnreadCount(newUnread)
             }
             catch(err){
                 console.log("Error in getMyUsers: ",err.Error)
@@ -86,7 +91,7 @@ const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
     //   ||last.sender_id===user._id && last.receiver_id ===selectedUser
         if(receivedMessage ){
-
+console.log("Received Message in getusers")
           lastMessage? setLastMessages((prev)=>{
             const newLastMessage =prev.map(last =>{
             
@@ -122,15 +127,36 @@ const negative = false//used for forcing conditions not to run
          }
          return newName
        }
+       React.useEffect(()=>{
+           if( receivedMessage)
+           {
+               setUnreadMessages(prev =>{
+                   console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
+                  return receivedMessage.sender_id!== selectedUser ?[...prev, receivedMessage]:[...prev]
+                })
+           }
+       
+      },[receivedMessage])
+      const  clearUnreadMessage = (id,count)=>{
+      
+       unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
+         const newUnread= prev.filter(unread=> unread.sender_id !== id )
+         console.log("newUnread messages in prev : ",newUnread)
+         return newUnread
+       }):  console.log("newUnread messages in prev could not be displayed as unreadMessages doesn't have value: ",unreadMessages)
 
+
+       }
+    
 return(// SLOW LOADING ISSUE
         <>
             {(users&& user)&&
                 users.map((userI,i)=>{ 
-                    
+                   let unreadCount = 0
+                   unreadMessages&& unreadMessages.map(unread=> unread.sender_id === userI._id && userI._id!==selectedUser? unreadCount+=1: unreadCount)
                     let online = isOnline && isOnline.includes(userI._id) ? true: false
                     return userI._id !== user._id && (<button className={userI._id === selectedUser? 'current-user':'user'}
-                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView}} 
+                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView; clearUnreadMessage(userI._id,unreadCount)}} 
                         key={i} >  
                          <ProfileCard classname='user-list-profile'>
                                         <img  className="profilePic-img" src={userI.imageUrl} alt="" />
@@ -139,8 +165,10 @@ return(// SLOW LOADING ISSUE
                                         <div className="user_offline  offline-info" ></div>}
                                     </ProfileCard>
                                 <div className="user_info">   
-                                    <h4 className="user-name">{upperCasing(userI.name)}</h4>
-
+                                    <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
+                                        <h4 className="user-name">{upperCasing(userI.name)}</h4>
+                                       {unreadCount >0 ? <div className="unread-badge">{unreadCount}</div>: null}
+                                    </div>
                                      <div className='user-latest-message'>{   
                                          lastMessages  ? lastMessages.map((last,i)=>{
                                             if(last.room_id === undefined || last.room_id === 'client-to-client')//ENSURES that users who are senders don't have room messages previewing
@@ -172,4 +200,4 @@ return(// SLOW LOADING ISSUE
         </>
     )
 }
-// className={userI._id === userId?'current-user':'user'}
+// className={userI._id === userId?'current-user':'user'}//

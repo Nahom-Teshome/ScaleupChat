@@ -36,6 +36,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   const [isMobile, setIsMobile] = React.useState(false)
   const pageRef = React.useRef(1)
   const scrollRef = React.useRef(null)
+  const messageCache = React.useRef(new Map())
    let screenSize = useMediaQuery("(max-width: 450px)")
   const newSocket = socket
   console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
@@ -56,7 +57,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
         
               console.log("receiving messages that were sent from other users: ",message)
               const isRoomMessage = message.room_id !== 'client-to-client'&& message.room_id !== null
-
+               
               console.log("Message Received looking in cache: ",queryClient.getQueryData(['data',isRoomMessage?message.room_id :message.sender_id]))
               setReceivedMessage(message)
               // queryClient.setQueryData(['data',isRoomMessage? message.room_id: message.sender_id],(oldMessages)=>{
@@ -74,9 +75,19 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
        const  handleLoadGroupMessages=(message)=>
           {//Make sure the listener is listening for the event before the event is emitted because it is only emitted once 
             console.log("loading new messages for room: ", roomId, " Messages: ",message)
+            let key =`data${roomId}]`
+           
             setOldMessage('')
-            setLoadMessage(message)
-          
+            if(!messageCache.current.has(key)){
+                console.log("doesn't exist in cache adding it",messageCache.current)
+                messageCache.current.set(key,message)
+                localStorage.setItem("messageData",JSON.stringify(messageCache.current))
+            }
+            else{
+              console.log("Exists in cache")
+            }
+            setLoadMessage(messageCache.current.get(key))
+            console.log("localStorage: ", JSON.parse(localStorage.getItem("messageData")))
           }
         const handleLoadUserMessages =(message)=>{
           setOldMessage('')
@@ -100,8 +111,8 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
                 newSocket.emit("getSelectedUser",selectedUserId)
                 console.log("loading new messages for user: ", selectedUserId, " Messages: ",message)
                 newSocket.on('loadMessages',handleLoadUserMessages)  
-                newSocket.emit("joinRoom")
               }
+              newSocket.emit("joinRoom")
             }
            
             return () => {
@@ -113,28 +124,24 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
 
           const handleScroll=()=>{
                 const {clientHeight, scrollTop, scrollHeight} = scrollRef.current
-                // console.log(`(Math.ceil(-scrollTop )${Math.ceil(-scrollTop )} +clientHeight ${clientHeight} == (scrollHeight) ${scrollHeight} ` )
                 if((Math.ceil(-scrollTop ) +clientHeight) == (scrollHeight) && !loadingRef.current)
-                  {// chatContainer not has access to the chat-wrapper div's scroll property
+                  {// chatContainer now has access to the chat-wrapper div's scroll property
                     console.log("Scrolled to the top!! pageCount: ",pageRef.current, "loading state: ",loadingRef.current )
                     loadingRef.current= true
                       loadOlderMessages()
                   }
           }
 
-          const loadOlderMessages=async()=>{
-        
-            
-               newSocket.off('olderMessages')
+          const loadOlderMessages=async()=>
+            {            
+               newSocket.off('olderMessages')//detach previous event listener before attaching a new one below
                await newSocket.on('olderMessages',(oldMessage)=>
                 {//event listener for old messages if triggered 
-                  console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",loadingRef.current , "roomId: ",roomId)
+                  console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",   loadingRef.current , "roomId: ",roomId)
                    loadingRef.current= false
-
                    setOldMessage(oldMessage)
-
                    pageRef.current += 1
-                   
+        
                   })     
                 
                   if(loadingRef.current){
@@ -144,45 +151,47 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
           React.useEffect(()=>{
             pageRef.current = 1
             const chatContainer = scrollRef.current//points to the chat-wrapper div
-            // console.log("scroll behaviour useEffect:scrollHeight: ",chatContainer.scrollHeight,"ClientHeight",chatContainer.clientHeight)
-            // console.log("Scroll Position: scrollTop", chatContainer.scrollTop);
               if(!chatContainer ) return;
             
-              chatContainer.addEventListener('scroll', handleScroll)//assigning an eventListener to the chat-wrapper div through chatContainer by  refference 
-
+              chatContainer.addEventListener('scroll', handleScroll)//assigning an eventListener to the chat-wrapper div through chatContainer by  refference
               return ()=>{
                 chatContainer.removeEventListener('scroll', handleScroll)
               }
           },[roomId])
+
+
+
           React.useEffect(()=>{
             let onlineUsersCount = new Set()
             // console.log("No of oNline USERS useEffect")
           
             if(selectedUser && onlineUsers)
               {
-                // console.log("selectedUser: ", selectedUser)
-              selectedUser.name.map(user=>{
-                return ( onlineUsers.includes(user.id))? onlineUsersCount.add(user.id):console.log("Id Not in online users")
-              })
-              let countArray = [...onlineUsersCount]
-// console.log("online users in chat : ", onlineUsers)
-              setNoOfOnlineUsers(countArray.length)
-              // console.log("selectedUser.name is included in onlineUsers: ", countArray.length)
+                     // console.log("selectedUser: ", selectedUser)
+                  selectedUser.name.map(user=>{
+                    return ( onlineUsers.includes(user.id))? onlineUsersCount.add(user.id):console.log("Id Not in online users")
+                  })
+                  let countArray = [...onlineUsersCount]
+                     // console.log("online users in chat : ", onlineUsers)
+                  setNoOfOnlineUsers(countArray.length)
+                     // console.log("selectedUser.name is included in onlineUsers: ", countArray.length)
                 
               }
-              
-              
               // console.log("No of oNline USERS useEffect: ", noOfOnlineUsers)
               
             },[onlineUsers,selectedUser])
           
-            const cloudinaryUpload= async(file)=>{
-console.log('inside cloudinaryUpload')
+
+
+            const cloudinaryUpload= async(file)=>
+              {
+                      // console.log('inside cloudinaryUpload')
               const formData = new FormData()
               formData.append('file',file)
               formData.append('upload_preset',import.meta.env.VITE_UPLOADPRESET)
               formData.append('cloud_name',import.meta.env.VITE_CLOUDNAME)
-              try{
+              try
+              {
                 const res = await fetch(import.meta.env.VITE_CLOUDINARY_URL,{
                   method:'POST',
                   body:formData
@@ -191,7 +200,7 @@ console.log('inside cloudinaryUpload')
                 if(data.error){
                   throw Error(data.error)
                 }
-                console.log("data from cloudinary: ", data)
+                // console.log("data from cloudinary: ", data)
                 return data
               }
               catch(err){
@@ -212,12 +221,10 @@ console.log('inside cloudinaryUpload')
                document.removeEventListener('mousedown',clickOutside)
               }
             },[file])
+
             const sendMessage=async(e)=>{
               e.preventDefault()
               setNewFile(null)
-            // setNewFile({secure_url:URL.createObjectURL(file[0])})
-            // console.log("file: ", file)
-            // const fileInfo = await Promise.all(file.map(cloudinaryUpload))
          
               const fileInfo =file ? await(cloudinaryUpload(file[0])): null
             // file&&console.log("Cloudinary data fileInfo: ", fileInfo)
@@ -254,15 +261,12 @@ console.log('inside cloudinaryUpload')
             console.error("either Message or File must be sent")
           }
         }
-        // console.log("REceivedmessages: ", receivedMessage)
+
+      
         const getSelectedUserId =(id,name,imageUrl)=>{
           setNewFile(null)
           setMoreClicked(false)
-    // console.log("ID OF SELECTED uSER: ",id, 'name ', name)
-      //     if(socket){
-      // console.log("joining Own room")
-      //       socket.emit('joinRoom')
-      //     }
+
           setSelectedUser({name:[name],id,imageUrl})//passing name as an array bc in room participants name is an array and i have to map through it
           setRoomId(null)
           
@@ -273,10 +277,7 @@ console.log('inside cloudinaryUpload')
             setOldMessage('')
             setMoreClicked(false)
             pageRef.current = 1
-      //       if(socket){
-      //  console.log("joining Group Room pageRef.current: ",pageRef.current)
-      //         socket.emit('joinRoom',id)
-      //       }
+
             const members = participants.map(participant =>({name:upperCasing(participant.name),id:participant.id,imageUrl:participant.imageUrl}))
             setSelectedUser({name:members,id:id,groupName,imageUrl:groupImageUrl})
           
@@ -296,11 +297,7 @@ console.log('inside cloudinaryUpload')
             }
             return newName
           }
-          // const changeFocus=(e)=>{
-          //   console.log("what is the event: ", e)
-          //   setTyping(true)
-          //   console.log("TYPING")
-          // }
+       
           React.useEffect(()=>{
             // console.log("Checking Screen Size in Chat")
             setIsMobile(screenSize)

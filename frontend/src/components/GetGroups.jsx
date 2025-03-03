@@ -6,6 +6,7 @@ import ProfileCard from './ProfileCard'
 export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage,sentFiles,mobileView}){
     const [groups,setGroups] = React.useState([])
     const [lastMessages,setLastMessages] = React.useState([])
+    const [unreadMessages,setUnreadMessages] = React.useState([''])
     const {user}= useUserContext()
     const {lastMessage} = useLastMessageContext()
     React.useEffect(()=>{
@@ -87,9 +88,21 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
          }
          return newName
        }
+        React.useEffect(()=>{
+                  if( receivedMessage)
+                  {
+                      setUnreadMessages(prev =>{
+                          console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
+                         return receivedMessage.room_id!== selectedGroup ?[...prev, receivedMessage]:[...prev]
+                       })
+                  }
+                },[receivedMessage])
+                  
     return(
         <>
          { groups.length > 0 &&groups.map((group,i)=>{
+                let unreadCount = 0
+                unreadMessages&& unreadMessages.map((unread)=> unread.room_id === group._id && selectedGroup !== group._id? unreadCount +=1:unreadCount)
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
@@ -100,8 +113,12 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                             </ProfileCard>
 
                             <div className='group-info user_info'>
-                                <h4 className="user-name"> {upperCasing(group.room_name)}</h4>
-                                <div className="user-latest-message group-latest-message">
+                                <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
+                                    <h4 className="user-name"> {upperCasing(group.room_name)}</h4>
+                                    
+                                </div>
+                                    <div className="user-latest-message group-latest-message">
+                                    {unreadCount >0 ? <div className="unread-badge">{unreadCount}</div>: null}
                                  {
                                     lastMessages ? lastMessages.map((last,i) =>{
 
