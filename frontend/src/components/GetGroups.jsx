@@ -1,12 +1,14 @@
 import React from 'react'
 import {useLastMessageContext} from '../hooks/useLastMessageContext'
 import { useUserContext } from '../hooks/useUserContext'
+import { useSocketContext } from '../hooks/useSocketContext'
 import ProfileCard from './ProfileCard'
 
 export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,receivedMessage,sentFiles,mobileView}){
     const [groups,setGroups] = React.useState([])
     const [lastMessages,setLastMessages] = React.useState([])
     const [unreadMessages,setUnreadMessages] = React.useState([''])
+    const {socket}= useSocketContext()
     const {user}= useUserContext()
     const {lastMessage} = useLastMessageContext()
     React.useEffect(()=>{
@@ -25,7 +27,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                 const data = await res.json()
     // console.log("Groupj Fetch was Successfull: ", data)
                 setGroups(data.rooms)
-                
+                socket.emit('joinrooms',{rooms:data.rooms})
                 }
             catch(err){
                 console.log("Error in Group.getMyRooms(): ", err.Error)
@@ -37,7 +39,21 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
         
 // console.log("groups : ",groups)
     },[])
+
+    React.useEffect(()=>{
+            if(groups.length > 0)
+            {
+
+                socket.on('connect',()=>{
+                    console.log("Reconecting with socket.id: ",socket.id, "and group: ",groups)
+                    socket.emit("joinrooms",{rooms:groups})
+                })
+                
+            }else{console.log("Groups not populated yet, can't emit Connect event")}
+        
+    },[groups])
     
+   
     React.useEffect(()=>{
         // console.log("last Message in GetGroup: ",lastMessage)
         setLastMessages(lastMessage)
@@ -97,6 +113,16 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                        })
                   }
                 },[receivedMessage])
+        const  clearUnreadMessage = (id,count)=>{
+      
+                    unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
+                      const newUnread= prev.filter(unread=> unread.room_id !== id )
+                      console.log("newUnread messages in prev : ",newUnread)
+                      return newUnread
+                    }):  console.log("newUnread messages in prev could not be displayed as unreadMessages doesn't have value: ",unreadMessages)
+             
+             
+                    }
                   
     return(
         <>
@@ -106,7 +132,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
-                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView}}
+                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView;clearUnreadMessage(group._id)}}
                         >
                             <ProfileCard classname="user-list-profile">
                                 <img className="profilePic-img" src={group.imageUrl} alt="" />

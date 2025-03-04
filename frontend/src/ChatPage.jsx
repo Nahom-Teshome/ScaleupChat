@@ -39,7 +39,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   const messageCache = React.useRef(new Map())
    let screenSize = useMediaQuery("(max-width: 450px)")
   const newSocket = socket
-  console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
+  // console.log("THIS IS IN PRODUCTION GETTING THE BACKEND API URL: ",import.meta.env.VITE_API_URL)
 
   // React.useEffect(()=>{
   //   console.log("useEffect get cache data: looking for selectedUserId: ", selectedUser.id)
@@ -48,6 +48,9 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   //    console.log('Query Data : ', cacheQuery)
 
   // },[selectedUser.id])
+  socket.on("disconnect", (reason) => {
+    console.log("Disconnected from server. Reason:", reason);
+  });
   React.useEffect(()=>{
     
       console.log('subscription use effect')
@@ -60,16 +63,6 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
                
               console.log("Message Received looking in cache: ",queryClient.getQueryData(['data',isRoomMessage?message.room_id :message.sender_id]))
               setReceivedMessage(message)
-              // queryClient.setQueryData(['data',isRoomMessage? message.room_id: message.sender_id],(oldMessages)=>{
-              //   if(!oldMessages){
-              //         console.warn("No old messages in cache, adding new one: ",message)
-              //       // return[ message]
-              //     }
-              //    if(oldMessages){
-              //         console.log("Old Message found in cache appending new message:",[...oldMessages])
-              //       return [message,...oldMessages]
-              //     }
-              //   })
       
         }
        const  handleLoadGroupMessages=(message)=>
@@ -98,26 +91,26 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
       if(roomId !== 'client-to-client' && roomId !== null)//when roomId exists
          {
             console.log("Joined room from subscription useEffect: ",roomId)
-            newSocket.on('loadMessages',handleLoadGroupMessages)
-            newSocket.emit("joinRoom",roomId) 
+            newSocket.on('load-group-Messages',handleLoadGroupMessages)
+            newSocket.emit("group-Room",roomId) 
           }
                   
       if(!roomId || roomId === 'client-to-client')//making sure roomId doesn't exist
           {
+            const selectedUserId = selectedUser.id
             if(selectedUser.id)//then we can check for the value of selectedUser.id
               {
-                const selectedUserId = selectedUser.id
-                console.log("selectedUser.id in subscription: ",selectedUserId)
-                newSocket.emit("getSelectedUser",selectedUserId)
+                // console.log("selectedUser.id in subscription: ",selectedUserId)
+                // newSocket.emit("getSelectedUser",selectedUserId)
                 console.log("loading new messages for user: ", selectedUserId, " Messages: ",message)
-                newSocket.on('loadMessages',handleLoadUserMessages)  
+                newSocket.on('load-user-Messages',handleLoadUserMessages)  
               }
-              newSocket.emit("joinRoom")
+              newSocket.emit("private-Room",selectedUserId)
             }
            
             return () => {
-              newSocket.off('loadMessages',handleLoadUserMessages);
-              newSocket.off('loadMessages',handleLoadGroupMessages);
+              newSocket.off('load-user-Messages',handleLoadUserMessages);
+              newSocket.off('load-group-Messages',handleLoadGroupMessages);
               newSocket.off('receiveMessage',handleReceiveMessage);
             }
           },[roomId,selectedUser.id])

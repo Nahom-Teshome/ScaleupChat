@@ -12,7 +12,6 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
     const [lastMessages,setLastMessages] = React.useState([])
     const {lastMessage} = useLastMessageContext()
     const [unreadMessages,setUnreadMessages] = React.useState([''])
-    const [unreadCount,setUnreadCount] = React.useState([])
     // const {onlineUsers} = useSocketContext()
     React.useEffect(()=>{
         const getLastMessages =async()=>{
@@ -60,11 +59,10 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
 
             // console.log("Data from GetMyUsers: ",data)
                 setUsers(data.myUsers)
-                const newUnread= data.myUsers.map((user)=>{ return {id:user._id, count:0}})
-                setUnreadCount(newUnread)
+                
             }
             catch(err){
-                console.log("Error in getMyUsers: ",err.Error)
+                console.log("Error in getMyUsers: ",err)
             }
         }
         if(user){
@@ -128,13 +126,14 @@ console.log("Received Message in getusers")
          return newName
        }
        React.useEffect(()=>{
-           if( receivedMessage)
+           if( receivedMessage && (receivedMessage.room_id === null || receivedMessage.room_id === 'client-to-client'))
            {
                setUnreadMessages(prev =>{
                    console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
                   return receivedMessage.sender_id!== selectedUser ?[...prev, receivedMessage]:[...prev]
                 })
            }
+
        
       },[receivedMessage])
       const  clearUnreadMessage = (id,count)=>{

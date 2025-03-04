@@ -1,6 +1,7 @@
-import {useEffect, createContext,useReducer } from "react";
+import {useEffect, createContext,useReducer,useState,useRef } from "react";
 import io from 'socket.io-client'
 import { useUserContext } from "../hooks/useUserContext";
+import {useCustomUseEffect} from '../hooks/useCustomUseEffect'
 import { preconnect } from "react-dom";
     export const SocketContext = createContext()
 
@@ -22,10 +23,14 @@ import { preconnect } from "react-dom";
 export default function SocketContextProvider({children}){
     const [state,dispatch ] = useReducer(socketReducer,{onlineUsers:null,socket:null})
     const {user} = useUserContext()
+    const [localSocket, setLocalSocket] = useState(null)
+    const {customUseEffect} = useCustomUseEffect(state.socket)
+   
     useEffect(()=>{
     // console.log('SocketContext UseEffect')
         const connect=async()=>{
-            try{
+            try
+            {
                 const newSocket =  io(import.meta.env.VITE_API_URL,{//convert to localhost after
                     transports:["websocket"]
                 })
@@ -34,24 +39,59 @@ export default function SocketContextProvider({children}){
 
                 newSocket.on('connect',()=>{
         //  user && console.log("user id from socketContext: ",user._id)
-                   user&& newSocket.emit('userOnline',(user._id))
-
-                    newSocket.on('online',(arg)=>{
-            // console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id)
-                        dispatch({type:'ADD_ONLINE_USER', payload:arg})
-                    })
+       
+                // setLocalSocket(newSocket)               
+                    console.log("Initial Connect with socket.id: ", newSocket.id)
                 })
             }
-            catch(err){
+            catch(err)
+            {
                 console.log('Error in socketContextProvider: ',err.message)
             }
         }
-       
-    
+
             connect()
-        
     
-    },[user])
+    },[])
+     
+       customUseEffect((sock)=>{
+            console.log("User has changed in custom useEffect!! socket: ",sock)
+            const handleOnlineListener =(arg)=>
+                {
+                    console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id,"socket.id: ",sock.id)
+                    dispatch({type:'ADD_ONLINE_USER', payload:arg})
+                }
+           sock.on('online',handleOnlineListener)
+            const handleOnlineUsers=()=>
+                { 
+                    console.log("emitting userOnline event with socket.id:  ",sock.id)
+                     sock.emit('userOnline',(user._id))
+            
+                 }
+    
+                sock ?  handleOnlineUsers(): console.log(" Either LocalSocket isn't set or User doesn't exist, Reading LOCALSOCKET: ",sock?.id," user.id ",user?._id)
+    
+      },[user])
+    // useEffect(()=>{
+        
+    //     const handleOnlineListener =(arg)=>
+    //         {
+    //             console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id,"socket.id: ",localSocket.id)
+    //             dispatch({type:'ADD_ONLINE_USER', payload:arg})
+    //         }
+    //     localSocket&& localSocket.on('online',handleOnlineListener)
+    //     const handleOnlineUsers=()=>
+    //         { 
+    //              localSocket.emit('userOnline',(user._id))
+        
+    //          }
+
+    //          user&& localSocket ?  handleOnlineUsers(): console.log(" Either LocalSocket isn't set or User doesn't exist, Reading LOCALSOCKET: ",localSocket?.id," user.id ",user?.id)
+
+    //    return ()=>{
+    //     localSocket && localSocket.off("online",handleOnlineListener)
+    //    }
+    // },[localSocket,user])
     return(
         <SocketContext.Provider value={{...state, dispatch}} >
             {children}

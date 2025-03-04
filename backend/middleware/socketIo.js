@@ -47,17 +47,9 @@ module.exports =(socket,io)=>{
                 // console.log("User_id Socket: ", user_id)
                 
                 socket.user_id = user_id
-
-                socket.on('userOnline',(userId)=>{//logged in user send's his/her id when logged in
-                    // console.log("currentuser. sent from frontend: ",userId)
-                  
-                        onlineUsers.add(userId)//userid is added to OnlineUsers set . so every user that logs in is added to this
-                        
-                    
-                        socket.broadcast.emit('online',[...onlineUsers])//onlineUsers id's are sent as an array to all rooms
-                    // console.log("list of online users: broadcasted", onlineUsers)
-                    
-                })
+                
+                
+                
                 // socket.user_id ="6773e68710454a240aad1f00"
             }
         catch(err){
@@ -68,26 +60,25 @@ module.exports =(socket,io)=>{
            
          
         
-        socket.on('getSelectedUser',async(selectedUserId)=>{
-            socket.selectedUserId =selectedUserId
-            console.log("The selected User is: in socket: ",socket.selectedUserId)
-        })
-            // console.log("Connection Established . user: ",socket.user_id)
-            socket.on('joinRoom',async(roomId=null)=>{
-                // const user = await User.findOne({_id:socket.user_id})
-                console.log("roomId in Socket Io ", roomId)
+        // console.log("Connection Established . user: ",socket.user_id)
+        socket.on('userOnline',(userId)=>{//logged in user send's his/her id when logged in
+            console.log("currentuser. sent from frontend: ",userId ,"and socket.id: ",socket.id)
+          
+                onlineUsers.add(userId)//userid is added to OnlineUsers set . so every user that logs in is added to this
                 
-                if(!roomId){
-                    socket.join(socket.user_id)
-                     console.log(`Room ${socket.user_id} joined`)
-
-                    
-                       if(socket.selectedUserId){
+            
+                io.emit('online',[...onlineUsers])//onlineUsers id's are sent as an array to all rooms
+            // console.log("list of online users: broadcasted", onlineUsers)
+            
+        })
+        socket.on('private-Room',async(selectedUserId)=>{
+            
+                       if(selectedUserId){
                             console.log("sokcet.selectedUserId does exits")
                         const message = await Message.find({
                                   $or:[
-                                              {sender_id:socket.selectedUserId,receiver_id:socket.user_id},//socket.selectedUserId is the id of the selected user
-                                              {receiver_id: socket.selectedUserId, sender_id:socket.user_id },
+                                              {sender_id:selectedUserId,receiver_id:socket.user_id},//socket.selectedUserId is the id of the selected user
+                                              {receiver_id:selectedUserId, sender_id:socket.user_id },
                                       ],
                                           }).sort({createdAt:-1}).limit(20)//sort the messages by time of creation .
                                           if(message.length < 1){// if messages array is empty throw an error
@@ -95,15 +86,17 @@ module.exports =(socket,io)=>{
                                             //   throw Error("You have no messages from user")
                                           }
                                           const text = message.map(text=>{return text.files?({content:text.content,files:text.files,sender_id:text.sender_id,receiver_id:text.receiver_id,createdAt:text.createdAt}):{content:text.content,sender_id:text.sender_id,receiver_id:text.receiver_id,createdAt:text.createdAt}})// for neatness. map over messages array and assign the message property to text. We need 
-                    console.log("loading messages for user",text.length)
-                    socket.emit('loadMessages',text)
+                    console.log(socket.id,"loading messages for user",text.length)
+                    console.log("user joined rooms: ",socket.rooms)
+                    io.to(socket.user_id).emit('load-user-Messages',text)
                   }
                   else{console.log('socket.selectedUserId: ',socket.selectedUserId)}
-                }
                 
-                if(roomId){
-                    console.log(`A room Id was passed: Trying to join Group! with Room Id ${roomId}`)
+            })
+            socket.on('group-Room',async(roomId=null)=>{
+                if(socket.rooms.has(roomId)){
                     socket.join(roomId)
+                    console.log(`A room Id was passed: Trying to join Group! with Room Id ${roomId}`)
                     const message = await Message.find({room_id:roomId }).sort({createdAt:-1}).limit(20)//sort the messages by time of creation .
                     if(message.length < 1 || !message){// if messages array is empty throw an error
                                     //  console.log("you have no messages")
@@ -111,9 +104,14 @@ module.exports =(socket,io)=>{
                                         }
                                         const text = message.map(text=>{
                                             return (text.files?{content:text.content,files:text.files,room_id:text.room_id,sender_id:text.sender_id,createdAt:text.createdAt}:{content:text.content,room_id:text.room_id,sender_id:text.sender_id,createdAt:text.createdAt})})// for neatness. map over messages array and assign the message property to text
-                    console.log('socketio middleware: loading messages!!',text.length)
-                    socket.emit('loadMessages',text)//emit loadMessage event as soon as user joins group
+                    console.log(`socketio middleware: loading messages!! for room: ${roomId}`,text.length)
+                    console.log("USER JOINED ROOM: ", socket.rooms)
+
+                    io.to(roomId).emit('load-group-Messages',text)//emit loadMessage event as soon as user joins group
+                    
                 }
+                else{console.log(`${roomId} does not exist in rooms. looking at socket.id: ${socket.id}`)}
+                // console.log("All rooms on the server:", io.sockets.adapter.rooms);
 
             })
             
@@ -129,7 +127,7 @@ module.exports =(socket,io)=>{
                             const exists = await User.findOne({_id:receiverId})
 
                             if(!exists)
-                            {
+                                {
                                 console.log("ERROR, User doesn't exist")
                                 socket.emit("ERROR, User doesn't exist")
                                 return 
@@ -137,7 +135,7 @@ module.exports =(socket,io)=>{
                             const message = await Message.create({receiver_id:receiverId,sender_id:socket.user_id,content,files:file})// this is one to one messaging so the message has both receiver and sender id but on the group(room)messaging the message only has sender_id and that is what we will be using
                              
                             message&&   console.log("message added to db: ", message)// if message exists show it 
-                            
+                                console.log(socket.id,"user joined room: ",socket.rooms)
                         //notify the receiver of the incomming message
                      socket.to(receiverId).emit('receiveMessage',message)
                         
@@ -152,6 +150,7 @@ module.exports =(socket,io)=>{
                         
                         message&&   console.log("message added to db: ", message)// if message exists show it 
                         message && console.log("Message emitted to room: ", roomId)
+                        console.log(socket.id,"USER JOINED ROOM: ", socket.rooms)
                         socket.to(roomId).emit('receiveMessage',message)
                     }
                     
@@ -161,7 +160,7 @@ module.exports =(socket,io)=>{
                     console.log("loadMoreMessages event triggered from frontend: with page: ", page, 'roomId: ',roomId)
                     const pageSize = 20 
                     if(roomId)
-                    {
+                        {
                             const message = await Message.find({room_id:roomId }).sort({createdAt:-1}).skip(page*pageSize).limit(20)//sort the messages by time of creation .
                         
                         if(message.length < 1 || !message){// if messages array is empty throw an error
@@ -186,6 +185,22 @@ module.exports =(socket,io)=>{
             
             
             
+            socket.on('joinrooms',({rooms})=>{
+                    socket.join(socket.user_id)//joining own room Automatically then also join rooms when the rooms load
+                    console.log(socket.id,"joining own room Automatically then also join rooms when the rooms load: ",socket.user_id)
+                    if(Array.isArray(rooms))
+                    {
+                        rooms.forEach((room)=>{
+                            socket.join(room._id)
+                            // console.log(`Room : ${room._id} joined`)
+                        })
+                    }
+                    else(console.log("Room is not an array"))
+    
+                        // console.log("socket.rooms",socket.rooms)
+                 
+                   
+            })
         }
         
         const handleUploadfiles=async(formData)=>{
