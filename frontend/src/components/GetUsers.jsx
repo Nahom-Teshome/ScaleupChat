@@ -136,7 +136,7 @@ console.log("Received Message in getusers")
 
        
       },[receivedMessage])
-      const  clearUnreadMessage = (id,count)=>{
+      const  clearUnreadMessage = (id)=>{
       
        unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
          const newUnread= prev.filter(unread=> unread.sender_id !== id )
@@ -154,8 +154,9 @@ return(// SLOW LOADING ISSUE
                    let unreadCount = 0
                    unreadMessages&& unreadMessages.map(unread=> unread.sender_id === userI._id && userI._id!==selectedUser? unreadCount+=1: unreadCount)
                     let online = isOnline && isOnline.includes(userI._id) ? true: false
+
                     return userI._id !== user._id && (<button className={userI._id === selectedUser? 'current-user':'user'}
-                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView; clearUnreadMessage(userI._id,unreadCount)}} 
+                        onClick={()=>{fetchMessages(userI._id, upperCasing(userI.name),userI.imageUrl);mobileView(); clearUnreadMessage(userI._id)}} 
                         key={i} >  
                          <ProfileCard classname='user-list-profile'>
                                         <img  className="profilePic-img" src={userI.imageUrl} alt="" />

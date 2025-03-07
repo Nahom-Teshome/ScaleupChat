@@ -132,7 +132,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
-                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView;clearUnreadMessage(group._id)}}
+                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView();clearUnreadMessage(group._id)}}
                         >
                             <ProfileCard classname="user-list-profile">
                                 <img className="profilePic-img" src={group.imageUrl} alt="" />

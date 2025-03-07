@@ -44,7 +44,7 @@ module.exports =(socket,io)=>{
                 let user_id = token._id
                 
                 
-                // console.log("User_id Socket: ", user_id)
+                console.log("User_id Socket: ", user_id,socket.id)
                 
                 socket.user_id = user_id
                 

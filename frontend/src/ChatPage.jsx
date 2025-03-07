@@ -79,7 +79,8 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             else{
               console.log("Exists in cache")
             }
-            setLoadMessage(messageCache.current.get(key))
+            // setLoadMessage(messageCache.current.get(key))
+            setLoadMessage(message)
             console.log("localStorage: ", JSON.parse(localStorage.getItem("messageData")))
           }
         const handleLoadUserMessages =(message)=>{
@@ -121,14 +122,16 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
                   {// chatContainer now has access to the chat-wrapper div's scroll property
                     console.log("Scrolled to the top!! pageCount: ",pageRef.current, "loading state: ",loadingRef.current )
                     loadingRef.current= true
-                      loadOlderMessages()
+                     loadOlderMessages()
                   }
+                  // else{console.log(`clientHeight:${clientHeight}, scrollTop:${Math.ceil(scrollTop)}, scrollHeight:${scrollHeight} `)}
           }
 
           const loadOlderMessages=async()=>
             {            
+              console.log("loading state in loadOlderMessages: ",loadingRef.current)
                newSocket.off('olderMessages')//detach previous event listener before attaching a new one below
-               await newSocket.on('olderMessages',(oldMessage)=>
+               newSocket.on('olderMessages',(oldMessage)=>
                 {//event listener for old messages if triggered 
                   console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",   loadingRef.current , "roomId: ",roomId)
                    loadingRef.current= false
@@ -146,7 +149,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             const chatContainer = scrollRef.current//points to the chat-wrapper div
               if(!chatContainer ) return;
             
-              chatContainer.addEventListener('scroll', handleScroll)//assigning an eventListener to the chat-wrapper div through chatContainer by  refference
+              chatContainer.addEventListener('scroll',  roomId && roomId !== "client-to-client"&& handleScroll)//assigning an eventListener to the chat-wrapper div through chatContainer by  refference. the Pagination only works for GROUPS so roomId must be present
               return ()=>{
                 chatContainer.removeEventListener('scroll', handleScroll)
               }
@@ -325,7 +328,7 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
-                                mobileView={ screenSize?()=>{setUsersShown(false)}:null}
+                                mobileView={isMobile?()=>{setUsersShown(false)}:()=>{ return true}}
                                 />
 
                       <GetGroups getRoomId={getRoomId}
@@ -333,7 +336,7 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                                 sentMessage={newMessage}
                                 receivedMessage={receivedMessage}
                                 sentFiles={newFile}
-                                mobileView={screenSize?()=>{setUsersShown(false)}:null}
+                                mobileView={isMobile?()=>{setUsersShown(false)}:()=>{ return true}}
                                 />
                     
                 </div>
@@ -396,27 +399,28 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
 
                  {selectedUser.id &&  <form className="chat-form" action="">
                     <div className="chat-input-wrapper">
+                      <input className="file-input" type="file" multiple
+                              onChange={(e)=>{
+                                console.log("File loaded to Chat input: ",e.target.files[0])
+                                setFile(Array.from(e.target.files));
+                                setMiniImage(e.target.files[0].type.split('/')[0] === 'image'?([URL.createObjectURL(e.target.files[0]),e.target.files[0].name]):['/file.png',e.target.files[0].name]);
+                              }}
+                              ref={fileInputRef}
+                              name='file'
+                              />
                         <input className="chat-input" type="text"
                                 id="text"
                                 value={message} 
                                 onChange={(e)=>{setMessage(e.target.value)}}
                                 />
-                    </div>
-                        <input className="file-input" type="file" multiple
-                                onChange={(e)=>{
-                                  console.log("File loaded to Chat input: ",e.target.files[0])
-                                  setFile(Array.from(e.target.files));
-                                  setMiniImage(e.target.files[0].type.split('/')[0] === 'image'?([URL.createObjectURL(e.target.files[0]),e.target.files[0].name]):['/file.png',e.target.files[0].name]);
-                                }}
-                                ref={fileInputRef}
-                                name='file'
-                                />
+                    
                               <BsPaperclip className='paper-clip'/>
                            {file && <div className="mini-img-wrapper">
                                 <img className="mini-img"src={miniImage[0]} />
                                {miniImage.length>1&& <p>{ miniImage[1]}</p>}
                             </div>}
-                        <button className="chat-btn" onClick={sendMessage}><FaLocationArrow /></button>
+                        <button className="chat-btn" onClick={sendMessage}><FaLocationArrow className='chat-btn-arrow'/></button>
+                     </div>
                   </form>}
 
             </div>

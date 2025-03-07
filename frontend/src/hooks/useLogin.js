@@ -11,11 +11,13 @@ export function useLogin(){
     const [error,setError] =React.useState(null)
     const {dispatch:lastMessageDispatch} = useLastMessageContext()
     const navigate = useNavigate()
+    const [isLoading, setIsLoading] = React.useState(false)
     const login= async(email,password)=>
         {
 
             try{
                 setError(null)
+                setIsLoading(true)
                     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/login`,{
                         method:'POST',
                         headers:{'Content-Type':'application/json'},
@@ -45,6 +47,9 @@ export function useLogin(){
                 {
                     console.log("Error in Login: ",err)
                 }
+                finally{
+                    setIsLoading(false)
+                }
          }
          
                 const getLastMessages =async()=>{
@@ -71,6 +76,6 @@ export function useLogin(){
                         console.log('Error in getAllMessages: ',err)
                     }
                 }
-         return {login,error}
+         return {login,error,isLoading}
         }
 

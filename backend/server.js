@@ -12,7 +12,7 @@ const {Server} = require('socket.io')
 const server = http.createServer(app)
 const cors = require('cors')
 const auth = require("./middleware/Auth")
-        const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173","https://chat.scaleuptutor.com","*"]
+        const allowedOrigin = ["https://scaleupchat-test-frontend.onrender.com","http://localhost:5173","https://chat.scaleuptutor.com","http://192.168.69.124:5173","*"]
 app.use(cors({
     // origin: process.env.ALLOWED_ORIGIN?.split(',') || [],
     origin: allowedOrigin,// Allow requests only from this origin
@@ -62,7 +62,7 @@ app.use('/api/user',userRoutes)// this is the route for users (signup,logging ..
 app.use('/api/message', messageRoutes)// this is the route for messages (send,receive ...)
 app.use('/api/room/',roomRoutes)
 
-io.on('connection', (socket)=>{initializeSocket(socket,io)})
+
 
 
 const port=process.env.PORT || 3000
@@ -80,6 +80,7 @@ server.listen(port,()=>{// start listening for request on port 3000
     mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
     .then(()=>{
         console.log('Connected to MONGO and listening on port: ',port)
+        io.on('connection', (socket)=>{initializeSocket(socket,io)})
     })
     .catch((error)=>{
         console.log('Error in server: ',error)

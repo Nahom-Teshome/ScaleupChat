@@ -11,8 +11,8 @@ export function useMediaQuery(query){
 
         media.addEventListener('change',listener)
 
+        // console.log("Media query return: ",matches,media)
         return ()=>{ media.removeEventListener('change',listener)}
     },[query])
-// console.log("Media query return: ",matches)
     return matches
 }

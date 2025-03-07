@@ -54,6 +54,88 @@ html,body{
   border-radius: .4rem;
   color: white;
 }
+.login-container{
+  height: 100vh;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  gap: 1rem;
+  overflow: hidden;
+  position: relative;
+}
+.login-container::before{
+  transform: scale(1.1);
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:url("https://img.freepik.com/free-photo/young-hispanic-business-woman-using-her-mobile-phone-office_123827-29023.jpg?ga=GA1.1.1690421926.1728934601&semt=ais_hybrid"); /* Background image */
+    filter: blur(10px); /* Apply blur */
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+.login-wrapper{
+  width: 85%;
+  height: 85%;
+  /* border: 2px solid firebrick; */
+  display: flex;
+  z-index: 1;
+}
+.login-form{
+  background-color: rgb(249, 249, 249);
+  margin:0;
+  border-radius: 0;
+  width: 55%;
+  gap:.3rem;
+  color: rgb(59, 59, 60);
+  font-size: 2rem;
+  font-family: 'Times New Roman', Times, serif;
+  /* text-align: start; */
+  position: relative;
+}
+.login-form-lable{
+  position:absolute;
+
+  /* justify-self: start; */
+}
+.login-form-title{
+  color:dodgerblue;
+  font-size:3rem;
+  font-family:'Courier New', Courier, monospace;
+}
+.login-form > input{
+  background-color: rgb(255, 255, 255);
+  color: rgb(3, 72, 182);
+  height: 2.3rem;
+  width:50%;
+  box-shadow: 1px 1px 10px rgb(211, 226, 239);
+  border: none;
+}
+.login-form > button{
+  background-color: rgb(39, 39, 40);
+  height: 3rem;
+  color: white;
+  font-size: larger;
+}
+.login-background{
+  width:45%;
+  /* border: 2px solid rgb(25, 148, 154); */
+}
+.error{
+border: 1px solid red;
+min-height: 4vh;
+min-width: 10vw;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: .3rem;
+background-color: rgb(250, 243, 243);
+color: red;
+border-radius: .4rem;
+}
 input{
   width: 80%;
   border-radius: .3rem;
@@ -103,6 +185,7 @@ input:focus{
   background-color: rgb(255, 255, 255);
   margin: 0;
   height: 13.2%;
+  max-height:7rem ;
   /* width: 70%; */
   border-bottom: 1px solid rgb(196, 193, 193);
   display: flex;
@@ -302,7 +385,8 @@ input:focus{
   /* background-color: rgb(44, 49, 49); */
   background-color: rgb(255, 255, 255);  
   width: 100%;
-  height: 5.3rem;
+  height: 13.2%;
+  max-height: 7rem;
   display:flex;
   flex-direction: column;
   align-items: center;
@@ -383,7 +467,10 @@ input:focus{
 .chat-form{
   display: flex;
   margin:0;
-  height: 12%;
+  /* height: 12%; */
+  height: 12vh;
+  min-height:5rem ;
+  max-height: 8rem;
   width: 100%;
   /* background-color: rgb(58, 31, 31); */
   background-color:transparent;
@@ -393,20 +480,21 @@ input:focus{
   position: absolute;
   bottom: 0;
   /* border-radius: .5rem; */
+  /* border: 1px solid rgb(22, 21, 14); */
 }
 .chat-btn{
   display: flex;
   align-items: center;
   justify-content: center;
   width: 3.2rem;
-  height: 3.2rem;
+  height: 80%;
   font-size: 150%;
-  border-radius: 3rem;
-  margin: 0;
-  position: absolute;
-  right:6%;
+  border-radius: 4rem;
+  margin:0 .5rem 0 0;
+  /* position: absolute; */
+  /* right:6%; */
   background-color: rgb(91, 153, 203);
-  color: white;
+  color: rgb(255, 255, 255);
 }
 .chat-input{
   height: 97%;
@@ -415,25 +503,34 @@ input:focus{
   width: 85%;
   border-radius: 5rem;
   opacity: 1;
+  margin: 0 .1rem;
   /* text-indent: 5rem; */
 }
 .chat-input-wrapper{
   height: 70%;
+  width: 90%;
   border:none;
   background-color: rgb(211, 225, 231);
-  width: 90%;
   border-radius: 5rem;
   text-indent: 5rem;
   display: flex;
   justify-content: center;
+  align-items: center;
   opacity: .95;
   box-shadow: 2px 1px 10px 1px rgb(237, 237, 237);
+  position: relative;
+}
+.paper-clip{
+  color:rgb(146, 148, 149);
+  position:absolute;
+  left: 1rem;
+  font-size: 1.8rem;
+  
 }
 .file-input{
-  position: absolute;
+  /* position: absolute; */
   /* border: 1px solid firebrick; */
   width:2rem;
-  left: 4rem;
   opacity: 0;
   z-index: 1;
 }
@@ -468,13 +565,6 @@ input:focus{
   height: 100%;
   border-radius: 1rem;
 }
-.paper-clip{
-  color:rgb(146, 148, 149);
-  position:absolute;
-  left: 4rem;
-  font-size: 1.8rem;
- 
-}
 /* messages   */
 .message-container{
   /* border: 10px solid firebrick; */
@@ -485,7 +575,7 @@ input:focus{
 .user{
  width: fit-content;
  height: fit-content;
-  align-self: start;
+ align-self: start;
 }
 .my{
   display: none;
@@ -584,7 +674,7 @@ input:focus{
 
 /* user and group container */
 .users-container{
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(255, 251, 251);
   color: black;
   /* max-height: 100%; */
   height: 100%;
@@ -610,11 +700,11 @@ input:focus{
   overflow-y: scroll;
   scrollbar-width: none;
   position:absolute;
-   left:-30rem;
+  left:-30rem;
 }
 .users-container-mobile-show{
   background-color: rgb(45, 44, 44);
-  color: black;
+  color: rgb(0, 0, 0);
   /* max-height: 100%; */
   height: 100%;
   width: 100%;
@@ -626,7 +716,7 @@ input:focus{
   scrollbar-width: none;
   position:absolute;
   z-index: 19;
-  /* border: 1px solid saddlebrown; */
+  /* border: 10px solid saddlebrown; */
 }
 .mobile-arrow{
   position:absolute;
@@ -644,32 +734,33 @@ input:focus{
   gap: 0rem;
   align-items: center;
   /* border: 1px solid rgb(218, 32, 206); */
-
   justify-content: start;
 }
 .active-user{  
   background-color: rgb(255, 255, 255);
   width: 100%;
   height: 11.6%;
+  max-height: 7rem;
   margin: 0;
   border-bottom: 1px solid  rgb(203, 203, 203);
   display: flex;
   align-items: center;
+  /* border:1px solid firebrick; */
 }
 .online-info{
   position: absolute;
   bottom:0.2rem;
   right: .1rem;
- border: 2px solid white;
+  border: 2px solid white;
 }
 .offline-info{
   position: absolute;
   bottom:0.2rem;
   right: .1rem;
- border: 2px solid rgb(255, 255, 255);
+  border: 2px solid rgb(255, 255, 255);
 }
 .unread-badge{
- background-color: rgb(45, 114, 242);
+  background-color: rgb(45, 114, 242);
   width: 1.2rem;
   height: 1.2rem;
   border-radius: 1rem;
@@ -776,14 +867,14 @@ input:focus{
   display: flex;
   justify-content:start;
   max-width: 95%;
-    width: 95%;
-    height: 40%;
-    margin: 0 ;
-    /* border: 1px solid firebrick; */
-  }
+  width: 95%;
+  height: 40%;
+  margin: 0 ;
+  /* border: 1px solid firebrick; */
+}
 .latest-message-wrapper{
   /* border: 1px solid firebrick; */
-    display: flex;
+  display: flex;
   align-items:end;
   justify-content: space-between;
   width: 100%;
@@ -793,7 +884,7 @@ input:focus{
   color:grey;
   margin: 0;
 }
- .latest-message-content{
+.latest-message-content{
   /* border: 1px solid rgb(71, 64, 4); */
   display: flex;
   justify-content: start;
@@ -849,7 +940,7 @@ input:focus{
 .title{
   /* margin-left: 1rem; */
 }
- a{
+a{
   color: black;
   text-decoration: none;
 }
@@ -868,38 +959,43 @@ input:focus{
   background-color: darkred;
   width: 60%;
 }
+
 @media (max-width:415px) {
-    html{
-      font-size: 15px;
+  html{
+    font-size: 15px;
     }
     h1,h2,h3,h4,h5,p,div{
       font-size: 15px
     }
     .chat-btn{
-      width: 3.2em;
-      height: 3.2em;
+      width: 1.52em;
+      height: 2em;
       font-size: 30px;
       border-radius: 0rem 1rem  1rem 0 ;
       background-color: transparent;
       color:  rgb(91, 153, 203);
-      right:0
+      /* right:-.9rem */
     }
     .chat-input{
-      width: 82%;
+      width: 81%;
       text-indent: 0%;
-      margin-left: 1.4rem;
-      /* border: 1px solid black; */
+      /* margin-left: 1.4rem; */
+      border: none;
+      border-radius: 1.5rem;
       z-index: 100;
     }
     .chat-input-wrapper{
       display: flex;
-      justify-content: start;
+      justify-content: center;
+      width: 95%;
     }
     .paper-clip{
-      left:1.5rem;
+      left:.7rem;  
     }
     .file-input{
-      left:1.5rem
+      /* left:1rem; */
+      border: 1px solid darkblue;
+      /* opacity: 1; */
     }
     .update-profile{
       top:20%;
@@ -909,20 +1005,59 @@ input:focus{
       font-size: 14px;
     }
   }
+@media (min-height:685px) {
+    .chat-form{
+      height:8%
+    }
+}
+@media(min-height:1120px){
+  .chat-form{
+    height:5%
+  }
+}
   @media (max-width:360px){
     html{
-      font-size: 10px
+      font-size: 12px
     }
     h1,h2,h3,h4,h5,p,div{
-      font-size: 10px
+      font-size: 12px
     }
     .users-container-mobile-hide{
-    left:-45rem
+      left:-45rem
     }
-    .chat-btn{
-      width: 3.2em;
-      height: 3.2em;
-      font-size: 10px;
+    .chat-header{
+      height: 13.2%;
+      font-size: 15px;
+    }
+    .chat-header-wrapper{
+      /* border: 1px solid firebrick; */
+      font-size: 15px;
+    }
+    .profile-card{
+      height: 3.5em;
+      width: 3.5em;
+      min-width: 3.5em;
+      min-height: 3.5em;
+     font-size: 15px;
+    }
+     .chat-btn{
+      width: 3rem;
+      height: 3rem;
+     right:1rem;
+     /* background-color: aquamarine;  */
+     }  
+    .chat-btn-arrow{
+      font-size:3rem
+      
+    }
+    .chat-input-wrapper{
+      display: flex;
+      justify-content:center;
+      gap: .3rem;
+    }
+    .chat-input{
+      width: 78%;
+      border: none;
     }
     .update-profile{
       top:20%;
@@ -931,4 +1066,11 @@ input:focus{
       height: 30em;
       font-size: 10px;
     }
-}
+    .paper-clip{
+      left: 0.1rem;
+      font-size: 2.5rem;
+    }
+    .file-input{
+      /* opacity: 1; */
+    }
+  }
