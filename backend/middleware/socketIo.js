@@ -31,11 +31,15 @@ module.exports =(socket,io)=>{
             
             let parsedCookies = cookie.parse(cookieHeader)
             
-            try{
+            
                 
                 let auth = parsedCookies.authCookie
                 if(!auth){
                     
+                    console.log("no auth cookie sent in socket ")
+                    socket.emit('error',{message:"auth token not found in socket"})
+                    socket.disconnect()
+                    return
                     throw new Error("No auth cookie sent")
                 }
             // console.log("auth cookie: ",auth)
@@ -51,16 +55,13 @@ module.exports =(socket,io)=>{
                 
                 
                 // socket.user_id ="6773e68710454a240aad1f00"
-            }
-        catch(err){
-            console.log("no auth cookie sent in socket ")
-            socket.emit('error',{message:"auth token not found in socket"})
-            socket.disconnect()
-        }
+            
+     
+        
            
          
         
-        // console.log("Connection Established . user: ",socket.user_id)
+        console.log("Connection Established . user: ",socket.user_id)
         socket.on('userOnline',(userId)=>{//logged in user send's his/her id when logged in
             console.log("currentuser. sent from frontend: ",userId ,"and socket.id: ",socket.id)
           
@@ -68,7 +69,7 @@ module.exports =(socket,io)=>{
                 
             
                 io.emit('online',[...onlineUsers])//onlineUsers id's are sent as an array to all rooms
-            // console.log("list of online users: broadcasted", onlineUsers)
+            console.log("list of online users: broadcasted", onlineUsers)
             
         })
         socket.on('private-Room',async(selectedUserId)=>{
@@ -83,7 +84,7 @@ module.exports =(socket,io)=>{
                                           }).sort({createdAt:-1}).limit(20)//sort the messages by time of creation .
                                           if(message.length < 1){// if messages array is empty throw an error
                                               console.log('You have no messages from user: socketIo,',message)
-                                            //   throw Error("You have no messages from user")
+                                              throw Error("You have no messages from user")
                                           }
                                           const text = message.map(text=>{return text.files?({content:text.content,files:text.files,sender_id:text.sender_id,receiver_id:text.receiver_id,createdAt:text.createdAt}):{content:text.content,sender_id:text.sender_id,receiver_id:text.receiver_id,createdAt:text.createdAt}})// for neatness. map over messages array and assign the message property to text. We need 
                     console.log(socket.id,"loading messages for user",text.length)

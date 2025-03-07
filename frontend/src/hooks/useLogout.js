@@ -8,9 +8,9 @@ export function useLogout(){
     const logout= async()=>{
         try{
            console.log('This is socket from useLogout:',socket)
-           socket && socket.emit("disconnect",(user._id))
+           socket && socket.emit("disconnection",(user._id))
             console.log(" socket.id ", socket.id)
-            // socket.disconnect()
+            socket.disconnect()
             socketDispatch({type:'DISCONNECT'})
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/logout`,{
                 method:'POST',

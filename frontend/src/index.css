@@ -83,42 +83,62 @@ html,body{
   /* border: 2px solid firebrick; */
   display: flex;
   z-index: 1;
+  padding:0;
 }
-.login-form{
+.login-form-container{
   background-color: rgb(249, 249, 249);
-  margin:0;
   border-radius: 0;
   width: 55%;
   gap:.3rem;
-  color: rgb(59, 59, 60);
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-family: 'Times New Roman', Times, serif;
-  /* text-align: start; */
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content:start;
+  padding: 0;
+}
+.login-form{
+  display: flex;
+  margin:0;
+  flex-direction: column;
+  align-items: start;
+  width: 50%;
+  background-color: rgb(249, 249, 249);
+  /* border:1px solid red; */
+  color: rgb(59, 59, 60);
 }
 .login-form-lable{
-  position:absolute;
-
-  /* justify-self: start; */
+  font-size: 1.2rem;
+  margin: 0;
 }
 .login-form-title{
-  color:dodgerblue;
-  font-size:3rem;
-  font-family:'Courier New', Courier, monospace;
+  color:rgb(36, 36, 37);
+  font-size:1rem;
+  font-family:monospace;
+  margin: 2rem 0 2rem 80% ;
+}
+.login-form-message{
+  margin: 0 0 0 0 ;
+
 }
 .login-form > input{
   background-color: rgb(255, 255, 255);
-  color: rgb(3, 72, 182);
+  color: rgb(64, 65, 68);
   height: 2.3rem;
-  width:50%;
-  box-shadow: 1px 1px 10px rgb(211, 226, 239);
-  border: none;
+  width:100%;
+  /* box-shadow: 1px 1px 10px rgb(211, 226, 239); */
+  border:none;
+  outline:solid 1px  rgb(190, 190, 190)
 }
 .login-form > button{
   background-color: rgb(39, 39, 40);
+  background-color: black;
   height: 3rem;
   color: white;
-  font-size: larger;
+  font-size: large;
+  text-align: center;
+  margin: 0 auto;
 }
 .login-background{
   width:45%;

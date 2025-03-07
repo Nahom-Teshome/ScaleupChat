@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom'
                 localStorage.setItem('user',state.user.name)
                 console.log("Local Storage user Set to : ", state.user)
             }
-        },[state])
+        },[state.user?.name])
         React.useEffect(()=>{
             
             const fetchUser = async()=>{

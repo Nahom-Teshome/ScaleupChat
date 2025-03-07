@@ -1,17 +1,19 @@
 import { useUserContext } from "./useUserContext";
-import {useSocketContext} from './useSocketContext'
+// import {useSocketContext} from './useSocketContext'
 import {useNavigate} from 'react-router-dom'
 import React from 'react'
+// import io from 'socket.io-client'
 import { useLastMessageContext } from "./useLastMessageContext";
 
 export function useLogin(){
     
     const {dispatch} = useUserContext()
-    const {dispatch:socketDispatch,socket} = useSocketContext()
+    // const {dispatch:socketDispatch} = useSocketContext()
     const [error,setError] =React.useState(null)
     const {dispatch:lastMessageDispatch} = useLastMessageContext()
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = React.useState(false)
+    const [socketState, setSocketState] = React.useState(false)
     const login= async(email,password)=>
         {
 
@@ -35,11 +37,12 @@ export function useLogin(){
                 console.log("Login Successful, data: ", data )
                     dispatch({type:"LOGIN",payload:data.user})
                    await getLastMessages()
+                   setSocketState(true)
                     // setCurrentUser(data.user)
-                    socket.on('online',(arg)=>{
-                        console.log("list of online users in useLogin: ", arg)
-                        socketDispatch({type:'ADD_ONLINE_USER',payload:arg})
-                    })
+                    // socket.on('online',(arg)=>{
+                    //     console.log("list of online users in useLogin: ", arg)
+                    //     socketDispatch({type:'ADD_ONLINE_USER',payload:arg})
+                    // })
                     navigate('/chat')
                     
                 }
@@ -76,6 +79,7 @@ export function useLogin(){
                         console.log('Error in getAllMessages: ',err)
                     }
                 }
-         return {login,error,isLoading}
+               
+         return {login,error,isLoading,socketState}
         }
 

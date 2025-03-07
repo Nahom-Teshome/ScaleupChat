@@ -67,20 +67,20 @@ app.use('/api/room/',roomRoutes)
 
 const port=process.env.PORT || 3000
 // server.listen(port,'0.0.0.0', () => {
-//     mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
-//     .then(()=>{
-//         console.log('Connected to MONGO and listening on port: ',port)
-//     })
-//     .catch((error)=>{
-//         console.log('Error in server: ',error)
-//     }
-//     )
-//   });
-server.listen(port,()=>{// start listening for request on port 3000
-    mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
+    //     mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
+    //     .then(()=>{
+        //         console.log('Connected to MONGO and listening on port: ',port)
+        //     })
+        //     .catch((error)=>{
+            //         console.log('Error in server: ',error)
+            //     }
+            //     )
+            //   });
+            server.listen(port,()=>{// start listening for request on port 3000
+                mongoose.connect(process.env.MONGO_URI)// connects our server to our mongoDb Atlas Db
     .then(()=>{
-        console.log('Connected to MONGO and listening on port: ',port)
         io.on('connection', (socket)=>{initializeSocket(socket,io)})
+        console.log('Connected to MONGO and listening on port: ',port)
     })
     .catch((error)=>{
         console.log('Error in server: ',error)

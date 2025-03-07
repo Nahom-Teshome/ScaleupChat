@@ -5,7 +5,7 @@ export default function Loading(){
     return(
         <div style={{display:"flex", gap:8,}}>
           { [0,1,2,3,4,5,6,7,8,9,10].map( (i)=>{ 
-            const customColor=i%2 ===0?"dodgerblue":"firebrick"
+            const customColor=i%2 ===0?"black":"white"
            return( <motion.div
             key={i}
             animate={{y:[30,23.5,17,10.5,4 ,0 ,4 ,10.5,17,23.5,30,36.5,43,49.5,56,60,53.5,47,40.5,34,30],

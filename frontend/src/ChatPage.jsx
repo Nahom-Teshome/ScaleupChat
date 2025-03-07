@@ -48,7 +48,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   //    console.log('Query Data : ', cacheQuery)
 
   // },[selectedUser.id])
-  socket.on("disconnect", (reason) => {
+  socket&&socket.on("disconnect", (reason) => {
     console.log("Disconnected from server. Reason:", reason);
   });
   React.useEffect(()=>{
