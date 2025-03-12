@@ -79,6 +79,21 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                 })
             return newLastMessage
             }):setLastMessages([receivedMessage])
+
+            groups && setGroups(prev=>{
+                const newList = []
+                const topUser =[]
+                prev.map(group=>{
+                    if(group._id === receivedMessage.room_id){
+                        topUser.push(group)
+                    }
+                    else{
+                        newList.push(group)
+                    }
+
+                })
+                return [...topUser,...newList]
+            })
         
     },[receivedMessage])
 
@@ -131,7 +146,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                       console.log("newUnread messages in prev : ",newUnread)
                       socket.emit("clearUnread",(id))
                       return newUnread
-                    }):  console.log("newUnread messages in prev could not be displayed as unreadMessages doesn't have value: ",unreadMessages)
+                    }):  console.log("newUnread messages in prev could not be displayed, as unreadMessages doesn't have value: ",unreadMessages)
              
              
                     }

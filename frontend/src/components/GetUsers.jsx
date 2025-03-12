@@ -101,8 +101,27 @@ console.log("Received Message in getusers")
               return newLastMessage
         }):setLastMessages([receivedMessage])
     }
+    users&& setUsers(prev=>{
+       const newList =[]
+       const topUser =[]
+    prev.map((user,i)=>{
+            if(user._id === receivedMessage.sender_id){
+                // console.log(`user._id ${user._id} === receivedMessage.sender_id${receivedMessage.sender_id}`,user._id === receivedMessage.sender_id)
+                topUser.push(user)
+            }
+            if(user._id !== receivedMessage.sender_id){
+                // console.log(`user._id ${user._id} !== receivedMessage.sender_id${receivedMessage.sender_id}`,user._id !== receivedMessage.sender_id)
+                newList.push(user)
+            }
+            console.log("topUser: ",topUser," newList: ",newList, " i ",i, "user length: ", prev.length)
+          
+            
+        })
+        console.log("top",[...topUser,...newList])
+    return [...topUser,...newList]
+    })
     // console.log("last message update receive messages: ",receivedMessage,)
-    },[receivedMessage])
+    },[receivedMessage?._id])
 
     const convertToDate= (time)=>{
         const date= new Date(time)
