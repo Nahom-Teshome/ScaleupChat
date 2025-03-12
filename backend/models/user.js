@@ -98,7 +98,7 @@ userSchema.statics.login = async function(email,password){
         if(!user){
             //if user doesn't exist throw an error
             
-            throw Error(`Couldn't find user with email: ${email}`)
+            throw Error(`Incorrect email ${email}`)
         }
         
         const valid = await bcrypt.compare(password, user.password)//bcrypt compare compares the password sent from the frontend(user logging in ) and the hashed password stored in DB of the user(user we grabbed using the email) 

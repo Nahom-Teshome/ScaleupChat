@@ -88,7 +88,7 @@ html,body{
 .login-form-container{
   background-color: rgb(249, 249, 249);
   border-radius: 0;
-  width: 55%;
+  width: 45%;
   gap:.3rem;
   font-size: 1.8rem;
   font-family: 'Times New Roman', Times, serif;
@@ -134,7 +134,7 @@ html,body{
 .login-form > button{
   background-color: rgb(39, 39, 40);
   background-color: black;
-  height: 3rem;
+  height: 2.5rem;
   color: white;
   font-size: large;
   text-align: center;
@@ -147,6 +147,8 @@ html,body{
 .error{
 border: 1px solid red;
 min-height: 4vh;
+font-size: medium;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 min-width: 10vw;
 display: flex;
 justify-content: center;
@@ -155,6 +157,8 @@ padding: .3rem;
 background-color: rgb(250, 243, 243);
 color: red;
 border-radius: .4rem;
+z-index: 1;
+
 }
 input{
   width: 80%;
@@ -865,7 +869,7 @@ input:focus{
   margin: 0.4rem;
 }
 .user_info{
-  /* border: 1px solid grey; */
+  /* border: 3px solid grey; */
   color: rgb(25, 25, 25);
   display: flex;
   flex-direction: column;
@@ -879,7 +883,13 @@ input:focus{
   font-weight: 700;
   margin:.7rem 0 0rem 0rem ;
 }
-
+.user-name-unread{
+  display: flex;
+  /* border:1px solid pink; */
+  width:100%;
+  justify-content: space-between;
+  align-items: center;
+}
 .user-latest-message{
   font-family:cursive;
   font-weight:500;
@@ -924,6 +934,9 @@ input:focus{
 .latest-message-content>p{
   margin: 0;
   color:grey;
+}
+.latest-message-time-wrapper{
+ border: 1px solid brown;
 }
 .user_online{
   width: .8rem;
@@ -979,13 +992,31 @@ a{
   background-color: darkred;
   width: 60%;
 }
-
+@media (max-width:820px) {
+  .login-form-container{
+    width:100%;
+  }
+  .login-background{
+    width:0%;
+    /* border: 2px solid rgb(25, 148, 154); */
+  }
+}
 @media (max-width:415px) {
   html{
     font-size: 15px;
     }
     h1,h2,h3,h4,h5,p,div{
       font-size: 15px
+    }
+    .login-form-message{
+     font-size: 30px;
+    }
+    .login-wrapper{
+      /* height: 70%; */
+      width: 100%;
+    }
+    .error{
+      z-index: 10;
     }
     .chat-btn{
       width: 1.52em;

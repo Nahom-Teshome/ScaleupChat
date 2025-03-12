@@ -40,18 +40,18 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
 // console.log("groups : ",groups)
     },[])
 
-    React.useEffect(()=>{
-            if(groups.length > 0)
-            {
+    // React.useEffect(()=>{
+    //         if(groups.length > 0)
+    //         {
 
-                socket.on('connect',()=>{
-                    console.log("Reconecting with socket.id: ",socket.id, "and group: ",groups)
-                    socket.emit("joinrooms",{rooms:groups})
-                })
+    //             socket.on('connect',()=>{
+    //                 console.log("Reconecting with socket.id: ",socket.id, "and group: ",groups)
+    //                 socket.emit("joinrooms",{rooms:groups})
+    //             })
                 
-            }else{console.log("Groups not populated yet, can't emit Connect event")}
+    //         }else{console.log("Groups not populated yet, can't emit Connect event")}
         
-    },[groups])
+    // },[groups])
     
    
     React.useEffect(()=>{
@@ -104,6 +104,11 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
          }
          return newName
        }
+       const handleClick=(group)=>{
+            getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);
+            mobileView();
+            clearUnreadMessage(group._id)
+       }
         React.useEffect(()=>{
                   if( receivedMessage)
                   {
@@ -113,11 +118,18 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                        })
                   }
                 },[receivedMessage])
+                  React.useEffect(()=>{
+                        socket.on("unreadMessage",(unreadMessages)=>{
+                            console.log("unreadMessages in get group: ",unreadMessages)
+                            setUnreadMessages(unreadMessages)
+                        })
+                      },[])
         const  clearUnreadMessage = (id,count)=>{
       
                     unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
                       const newUnread= prev.filter(unread=> unread.room_id !== id )
                       console.log("newUnread messages in prev : ",newUnread)
+                      socket.emit("clearUnread",(id))
                       return newUnread
                     }):  console.log("newUnread messages in prev could not be displayed as unreadMessages doesn't have value: ",unreadMessages)
              
@@ -132,7 +144,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                       return(<button 
                         className={selectedGroup === group._id?'current-user':'user'} 
                         key={i}
-                        onClick={()=>{getRoomId(group._id,group.participants,upperCasing(group.room_name),group.imageUrl);mobileView();clearUnreadMessage(group._id)}}
+                        onClick={()=>{handleClick(group)}}
                         >
                             <ProfileCard classname="user-list-profile">
                                 <img className="profilePic-img" src={group.imageUrl} alt="" />
@@ -140,11 +152,14 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
 
                             <div className='group-info user_info'>
                                 <div style={{display:'flex',justifyContent:'space-between',width:'100%'}}>
-                                    <h4 className="user-name"> {upperCasing(group.room_name)}</h4>
+                                    <div className='user-name-unread'>
+                                        <h4 className="user-name"> {upperCasing(group.room_name)}</h4>
+                                        {unreadCount >0 ? <div className="unread-badge">{unreadCount}</div>: null}
+                                    </div>
                                     
                                 </div>
                                     <div className="user-latest-message group-latest-message">
-                                    {unreadCount >0 ? <div className="unread-badge">{unreadCount}</div>: null}
+                                   
                                  {
                                     lastMessages ? lastMessages.map((last,i) =>{
 
@@ -154,7 +169,8 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                                                             <div className="latest-message-content">
                                                                 <p>{last.content?last.content.slice(0,30):last.files[0].resource_type}</p>
                                                             </div>
-                                                            <p className='time'>{time }</p>
+                                                                 <p className='time'>{time }</p>
+                                                           
                                                         </div>:null
                                                     }):<div className="latest-message-wrapper">
                                                           <div className="latest-message-content">
@@ -162,6 +178,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                                                           </div>
                                                     </div>
                                  }
+                                  
                             </div>
                             </div>
                            

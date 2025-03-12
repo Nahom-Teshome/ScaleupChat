@@ -74,8 +74,13 @@ export default function SocketContextProvider({children}){
                 console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id,"socket.id: ",localSocket?.id, "SOCKET SET STATE: ",socketSet)
                 dispatch({type:'ADD_ONLINE_USER', payload:arg})
             }
+            const handleReceiveMessage=(message)=>
+                {//listen for event before the event is emitted
+                
+                      console.log("receiving messages that were sent from other users: ",message)
+                }
         const addOnlineUser=()=>{
-
+               localSocket.on('receiveMessage', handleReceiveMessage)
                localSocket.on('online',handleOnlineListener)
                 user&& localSocket.emit('userOnline',(user._id))
             }

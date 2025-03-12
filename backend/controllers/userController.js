@@ -2,6 +2,7 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookieparser')
 const Message = require('../models/message')
+const mongoose = require('mongoose')
 // create a token upon signup and login
 const createToken= (_id,role)=>{
     //signature requires all three parameters
@@ -168,6 +169,7 @@ async function logout(req,res){
 let users = new Set()
 async function getMyUsers(req,res){
     const id = req.user
+       
     try{
             if(!id){
                 console.log("You aren't logged in client")
@@ -180,33 +182,35 @@ async function getMyUsers(req,res){
                 throw Error("You aren't signed up, user isn't found")
             }
     // console.log("user does existed :",exist.name)
-            const messagesIds = await Message.find({
-                $or:[
-                    {sender_id:id},
-                    {receiver_id:id}
-                ],
-            },{sender_id:1,receiver_id:1})// this gets all messages that were either sent by or sent to logged-in user. specifically gets the sender_id and receiver_id of the messages
-    
-            if(!messagesIds){
-                console.log("Lonely in here . talk to people more, NO MESSAGES FOUND!")
-                throw Error("Lonely in here . talk to people more, NO MESSAGES FOUND!")
-            }
-    
-            messagesIds.map(messages=>{
-    
-                users.add(messages.sender_id)
-                users.add(messages.receiver_id )
-            })// i add the both the sender_id and receiver_id to a Set to avoid duplicates and that gives me the users the logged-in user has been talking to. I can use those id's to get the conversation between the two and fetch the last messages but right now i will get the users
+        const myUsers= await getConversationUsers(id)
 
-            const userIds = [...users]//since "users" is a SET i can't loop over it hence why it is spread into an array
-            const myUsers =[]
+            // const messagesIds = await Message.find({
+            //     $or:[
+            //         {sender_id:id},
+            //         {receiver_id:id}
+            //     ],
+            // },{sender_id:1,receiver_id:1})// this gets all messages that were either sent by or sent to logged-in user. specifically gets the sender_id and receiver_id of the messages
+    
+            // if(!messagesIds){
+            //     console.log("Lonely in here . talk to people more, NO MESSAGES FOUND!")
+            //     throw Error("Lonely in here . talk to people more, NO MESSAGES FOUND!")
+            // }
+    
+            // messagesIds.map(messages=>{
+    
+            //     users.add(messages.sender_id)
+            //     users.add(messages.receiver_id )
+            // })// i add the both the sender_id and receiver_id to a Set to avoid duplicates and that gives me the users the logged-in user has been talking to. I can use those id's to get the conversation between the two and fetch the last messages but right now i will get the users
 
-            for(let i = 0 ; i<userIds.length; i++){
-                if(userIds[i] !== undefined){
-                    // console.log("user id shouldn't be null or undefined: ",userIds[i])
-                    myUsers.push( await User.findOne({_id:userIds[i]},{_id:1,name:1,email:1,role:1,imageUrl:1})  )
-                }
-                }// the loop allows me to fetch all the users and their specific fields and store it in an array
+            // const userIds = [...users]//since "users" is a SET i can't loop over it hence why it is spread into an array
+            // const myUsers =[]
+
+            // for(let i = 0 ; i<userIds.length; i++){
+            //     if(userIds[i] !== undefined){
+            //         // console.log("user id shouldn't be null or undefined: ",userIds[i])
+            //         myUsers.push( await User.findOne({_id:userIds[i]},{_id:1,name:1,email:1,role:1,imageUrl:1})  )
+            //     }
+            //     }// the loop allows me to fetch all the users and their specific fields and store it in an array
          
 // console.log("my users IN GetmyUsers controller : ", myUsers)
             res.status(200).json({message:'Success',myUsers})
@@ -216,5 +220,57 @@ async function getMyUsers(req,res){
         }
 }
 
+const getConversationUsers =async(id)=>{
+  
+    try{
+        const result = await Message.aggregate([
+            {
+             $match:{
+                $or:[ {sender_id:id},
+                    {receiver_id:id}]
+             }   //gets messages that the user is involved in 
+            },
+            {
+             $sort:{createdAt:-1}//sorts the messages from lastest to earliest 
+            },
+            {
+             $group:{
+                _id:{//_id will contain the partners id
+                    $cond:{
+                        if:{
+                            $eq:["$sender_id",id]// if the id is equal to messages.sender_id?
+                        },
+                            then:"$receiver_id",// assign the other user id to receiver_id
+                            else:"$sender_id"   // if not ,assign the other user id to sender_id
+                    }
+                },
+                lastMessageTime:{$max:'$createdAt'}//adding a time reference for the new group(based on partner id)
+             }   
+            },
+            {
+                $sort:{lastMessageTime:-1}//sorting the new group 
+            }
+        ])
+        // console.log("User results in aggregate : " ,result)
+        const userId = result.map(user=>(user._id))
+        
+        const users = []
+  
+        for(let i = 0 ; i <userId.length; i++){
+            const tempUser = await User.find({_id:userId[i]},{_id:1,name:1,email:1,role:1,imageUrl:1})
+            if( tempUser.length >= 1 && tempUser[0].id !== id ){
+                //    console.log("tempUser: ",tempUser[0].name)
+                   users.push(...tempUser)//tempUser is an array and so pushing an array into an array nests it so i decided to spread it in
+               }
+        }
+        // console.log("in Aggregate: ",  users )
+
+        return users
+    }
+    catch(err){
+        // res.status(400).json({Error:err.message})
+        console.log("Aggregate my users Error",err)
+    }
+}
 // exporting functions to use them in the routes(message routes)
 module.exports = {userSignup,userLogin,getUsers,getCurrentUser,logout,getMyUsers,users,updateuser}

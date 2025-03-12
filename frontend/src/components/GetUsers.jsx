@@ -1,7 +1,7 @@
 import '../index.css'
 import React from 'react'
 import { useUserContext } from '../hooks/useUserContext'
-// import { useSocketContext } from '../hooks/useSocketContext'
+import { useSocketContext } from '../hooks/useSocketContext'
 import { useLastMessageContext } from '../hooks/useLastMessageContext'
 import ProfileCard from './ProfileCard'
 
@@ -12,6 +12,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
     const [lastMessages,setLastMessages] = React.useState([])
     const {lastMessage} = useLastMessageContext()
     const [unreadMessages,setUnreadMessages] = React.useState([''])
+    const {socket} = useSocketContext()
     // const {onlineUsers} = useSocketContext()
     React.useEffect(()=>{
         const getLastMessages =async()=>{
@@ -68,7 +69,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
         if(user){
             getMyUsers()
         }
-    },[])
+    },[user?.name])
 const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
         if(sentMessage ){
@@ -136,11 +137,18 @@ console.log("Received Message in getusers")
 
        
       },[receivedMessage])
+      React.useEffect(()=>{
+        socket.on("unreadMessage",(unreadMessages)=>{
+            console.log("unreadMessages in get user: ",unreadMessages)
+            setUnreadMessages(unreadMessages)
+        })
+      },[])
       const  clearUnreadMessage = (id)=>{
       
        unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
          const newUnread= prev.filter(unread=> unread.sender_id !== id )
          console.log("newUnread messages in prev : ",newUnread)
+         socket.emit("clearUnread",(id))
          return newUnread
        }):  console.log("newUnread messages in prev could not be displayed as unreadMessages doesn't have value: ",unreadMessages)
 

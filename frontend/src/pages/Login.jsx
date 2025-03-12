@@ -36,7 +36,7 @@ export default function Login(){
             <div className="login-wrapper">
 
            
-                <img className="login-background" src="https://img.freepik.com/free-photo/young-hispanic-business-woman-using-her-mobile-phone-office_123827-29023.jpg?ga=GA1.1.1690421926.1728934601&semt=ais_hybrid" alt="" />
+                <img className="login-background" src="https://i.pinimg.com/736x/65/b3/fb/65b3fb3b402d47686da415366f151297.jpg" alt="" />
             {isLoading&& <Loading/>}
                 {user&& navigate('/chat')}
                 <div className="login-form-container">
@@ -66,11 +66,11 @@ export default function Login(){
 
                             <button onClick={submit} disabled={isLoading}>Login</button>
                     </form>
-                </div>    
-            </div>
             {error&& <div className="error">
                     {error}
                 </div>}
+                </div>    
+            </div>
         </div>
     )
 }

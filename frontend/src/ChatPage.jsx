@@ -21,6 +21,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   const [receivedMessage, setReceivedMessage] = React.useState('')
   const [loadMessage,setLoadMessage] = React.useState('')
   const [oldMessage,setOldMessage] = React.useState('')
+  const [oldMessageLoading,setOldMessageLoading] = React.useState(false)
   const loadingRef = React.useRef(false)
   const [selectedUser,setSelectedUser] = React.useState({id:null,name:[]})
   const [roomId, setRoomId] = React.useState(null)
@@ -118,28 +119,30 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
 
           const handleScroll=()=>{
                 const {clientHeight, scrollTop, scrollHeight} = scrollRef.current
-                if((Math.ceil(-scrollTop ) +clientHeight) == (scrollHeight) && !loadingRef.current)
+                if((Math.ceil(-scrollTop) +10 +clientHeight) >= (scrollHeight) && !loadingRef.current)
                   {// chatContainer now has access to the chat-wrapper div's scroll property
                     console.log("Scrolled to the top!! pageCount: ",pageRef.current, "loading state: ",loadingRef.current )
                     loadingRef.current= true
+                    
+                     setOldMessageLoading(true)
                      loadOlderMessages()
                   }
-                  // else{console.log(`clientHeight:${clientHeight}, scrollTop:${Math.ceil(scrollTop)}, scrollHeight:${scrollHeight} `)}
+                  else{console.log(`clientHeight:${clientHeight}, scrollTop:${Math.ceil(-scrollTop)}, scrollHeight:${scrollHeight} `)}
           }
 
           const loadOlderMessages=async()=>
             {            
               console.log("loading state in loadOlderMessages: ",loadingRef.current)
                newSocket.off('olderMessages')//detach previous event listener before attaching a new one below
-               newSocket.on('olderMessages',(oldMessage)=>
+                await newSocket.on('olderMessages',(oldMessage)=>
                 {//event listener for old messages if triggered 
                   console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",   loadingRef.current , "roomId: ",roomId)
                    loadingRef.current= false
                    setOldMessage(oldMessage)
+                   setOldMessageLoading(false)
                    pageRef.current += 1
-        
+                   
                   })     
-                
                   if(loadingRef.current){
                     newSocket.emit('loadMoreMessages',{roomId, page:pageRef.current})
                  }
@@ -175,7 +178,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
               }
               // console.log("No of oNline USERS useEffect: ", noOfOnlineUsers)
               
-            },[onlineUsers,selectedUser])
+            },[onlineUsers,selectedUser.id])
           
 
 
@@ -262,7 +265,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
         const getSelectedUserId =(id,name,imageUrl)=>{
           setNewFile(null)
           setMoreClicked(false)
-
+          setLoadMessage('')
           setSelectedUser({name:[name],id,imageUrl})//passing name as an array bc in room participants name is an array and i have to map through it
           setRoomId(null)
           
@@ -271,6 +274,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             setNewFile(null)//so that old files are overwritten when a new  group is selected
             setRoomId(id)
             setOldMessage('')
+            setLoadMessage('')
             setMoreClicked(false)
             pageRef.current = 1
 
@@ -350,7 +354,7 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                       <ProfileCard> 
                         {/* <h4 className="username-initial">
                                {selectedUser.groupName?selectedUser.groupName[0]:selectedUser.name.map(n=>n[0])}
-                        </h4> */}
+                               </h4> */}
                         <img className="profilePic-img"src={selectedUser?.imageUrl} alt={user.name[0].toUpperCase()}
                         onClick={()=>{selectedUser.groupName && setMoreClicked(prev =>!prev)}} />{/*if inside a groupChat pressing profilePic will display group info*/}
                       </ProfileCard>
@@ -365,11 +369,12 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                            {noOfOnlineUsers > 0?`${noOfOnlineUsers} ONLINE`:'OFFLINE'}
                        </div>:onlineUsers ?
                         <div 
-                       className={onlineUsers.includes(selectedUser.id)?'ON':' OFF'}>
+                        className={onlineUsers.includes(selectedUser.id)?'ON':' OFF'}>
                          {onlineUsers.includes(selectedUser.id)?'ONLINE':'OFFLINE'}
                          </div>:null
                        }
                           
+                       {oldMessageLoading&& <h1 className="Loading-OldMessages">Loading OlderMessages</h1>}
                        </div>
                                          
                   </div>}
@@ -383,7 +388,6 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                                   
               </div>}
                 <div className="chat-wrapper" ref={scrollRef}>
-                
                     {(selectedUser.id || roomId)? <GetMessages 
                                                   selectedUserID={selectedUser}
                                                   sentMessage={newMessage}
@@ -392,8 +396,9 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                                                   loadMessage ={loadMessage}
                                                   oldMessages={oldMessage}
                                                   roomID={roomId}
+                                                  loadingOldMessages={oldMessageLoading}
                                                   />:
-                      <p>Select a user</p>}
+                                                  <p>Select a user</p>}
 
                 </div>
 
