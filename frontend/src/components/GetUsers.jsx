@@ -12,6 +12,7 @@ export default function GetUsers({fetchMessages,selectedUser,isOnline,sentMessag
     const [lastMessages,setLastMessages] = React.useState([])
     const {lastMessage} = useLastMessageContext()
     const [unreadMessages,setUnreadMessages] = React.useState([''])
+    const [typing, setTyping] = React.useState([])
     const {socket} = useSocketContext()
     // const {onlineUsers} = useSocketContext()
     React.useEffect(()=>{
@@ -162,6 +163,19 @@ console.log("Received Message in getusers")
             setUnreadMessages(unreadMessages)
         })
       },[])
+      React.useEffect(()=>{
+        console.log("typing useEffect listeners attached")
+        socket.on("typing",(typingUser)=>{
+            console.log("user: ",typingUser," is typing ")
+            setTyping(prev=> ([...prev,typingUser]))
+        })
+        socket.on("stopTyping",(typingUser)=>{
+            console.log("user: ", typingUser, " has stopped typing")
+            setTyping(prev=>{
+              return  prev.filter(id => id !== typingUser)
+            })
+        })
+      },[])
       const  clearUnreadMessage = (id)=>{
       
        unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
@@ -174,11 +188,14 @@ console.log("Received Message in getusers")
 
        }
     
-return(// SLOW LOADING ISSUE
+return(// SLOW LOADING ISSUE // not anymore
         <>
             {(users&& user)&&
                 users.map((userI,i)=>{ 
                    let unreadCount = 0
+                   let userIsTyping = false
+                //    console.log("typing: ",typing)
+                   typing.length> 0 && typing.map(id=> id === userI._id? userIsTyping = true : userIsTyping )
                    unreadMessages&& unreadMessages.map(unread=> unread.sender_id === userI._id && userI._id!==selectedUser? unreadCount+=1: unreadCount)
                     let online = isOnline && isOnline.includes(userI._id) ? true: false
 
@@ -204,7 +221,12 @@ return(// SLOW LOADING ISSUE
                                                     return (last.sender_id === userI._id || last.receiver_id === userI._id) &&
                                                     <div key={i} className='latest-message-wrapper'>
                                                         <div className="latest-message-content">
-                                                            <p> {last.content?`${last.content.slice(0,30)} ...`:last.files[0].resource_type} </p>
+                                                           {
+                                                            userIsTyping? <div className="typing">typing
+                                                            <span className="dot"></span>
+                                                            <span className="dot"></span>
+                                                            <span className="dot"></span></div>:<p> {last.content?`${last.content.slice(0,30)} ...`:last.files[0].resource_type} </p>
+                                                            }
                                                         </div>
                                                         <p className='time'>{time} </p>
                                                     </div>

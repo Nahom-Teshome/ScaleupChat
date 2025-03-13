@@ -258,6 +258,13 @@ module.exports =(socket,io,redisClient)=>{
                  
                    
             })
+            socket.on("isTyping",({userId,selectedUserId})=>{
+                console.log(`user ${userId}  is Typing to ${selectedUserId}`)
+                socket.to(selectedUserId).emit('typing',(userId))
+            })
+            socket.on("clearTyping",({selectedUserId,userId})=>{
+                socket.to(selectedUserId).emit('stopTyping',(userId))
+            })
         }
         
         const handleUploadfiles=async(formData)=>{

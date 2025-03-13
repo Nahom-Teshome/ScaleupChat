@@ -783,25 +783,6 @@ input:focus{
   right: .1rem;
   border: 2px solid rgb(255, 255, 255);
 }
-.unread-badge{
-  background-color: rgb(45, 114, 242);
-  width: 1.2rem;
-  height: 1.2rem;
-  border-radius: 1rem;
-  color: white;
-  font-size:small;
-  font-weight: 600;
-  box-shadow: 1px 1px 5px rgb(182, 180, 180);
-  animation-name: unread-blink;
-  animation-timing-function:ease-out;
-  animation-duration: 1s;
-  animation-direction: normal;
-  animation-iteration-count:infinite;
-}
-@keyframes unread-blink{
-  0%{}
-  100%{}
-}
 .sidebar{
   position: fixed;
   width: 25%;
@@ -944,6 +925,56 @@ input:focus{
   background: linear-gradient( rgb(44, 109, 184),rgb(69, 237, 18));
   border-radius: 1rem;
   /* border: 2px solid red; */
+}
+.typing{
+  color:  rgb(45, 114, 242);
+  display: flex;
+  gap:.2rem;
+  align-items: end;
+  /* border:1px solid red; */
+}
+.dot{
+  animation: typing-wave 1.5s infinite ease-in-out;
+  width: .2rem;
+  height: .2rem;
+  border-radius: 1rem;
+  margin-bottom:.3rem
+  /* background-color: rgb(13, 0, 255); */
+  
+}
+.dot:nth-child(1){animation-delay: 0s}
+.dot:nth-child(2){animation-delay: 0.2s}
+.dot:nth-child(3){animation-delay: 0.4s}
+@keyframes typing-wave{
+  0%,100%{
+    background-color:pink;
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50%{
+    background-color:rgb(45, 114, 242);;
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+.unread-badge{
+  background-color: rgb(45, 114, 242);
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 1rem;
+  color: white;
+  font-size:small;
+  font-weight: 600;
+  box-shadow: 1px 1px 5px rgb(182, 180, 180);
+  animation-name: unread-blink;
+  animation-timing-function:ease-out;
+  animation-duration: 1s;
+  animation-direction: normal;
+  animation-iteration-count:infinite;
+}
+@keyframes unread-blink{
+  0%{}
+  100%{}
 }
 .user_offline{
   width: .8rem;

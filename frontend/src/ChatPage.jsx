@@ -35,6 +35,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   const [miniImage , setMiniImage] = React.useState(null)
   const [usersShown, setUsersShown] = React.useState(true)
   const [isMobile, setIsMobile] = React.useState(false)
+  const [typingAllow, setTypingAllow] =React.useState(true)
   const pageRef = React.useRef(1)
   const scrollRef = React.useRef(null)
   const messageCache = React.useRef(new Map())
@@ -212,6 +213,13 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
                 if(file &&  !event.target.closest('.chat-form')){
                   setMiniImage(null)
                   setFile(null)
+                  socket.emit('clearTyping',({userId:user._id,selectedUserId:selectedUser.id}))
+                  setTypingAllow(true)
+                }
+                if(!event.target.closest('.chat-form'))
+                {
+                  socket.emit('clearTyping',({userId:user._id,selectedUserId:selectedUser.id}))
+                  setTypingAllow(true)
                 }
               }
               document.addEventListener('mousedown',clickOutside)
@@ -219,7 +227,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
               return ()=>{
                document.removeEventListener('mousedown',clickOutside)
               }
-            },[file])
+            },[file,message])
 
             const sendMessage=async(e)=>{
               e.preventDefault()
@@ -243,6 +251,8 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             {
               setNewMessage(message)
               socket.emit('sendMessage',{senderId:user._id,receiverId:selectedUser.id, content: message ,roomId,file:fileMessage?fileMessage:null})
+              socket.emit('clearTyping',({userId:user._id,selectedUserId:selectedUser.id}))
+              setTypingAllow(true)
               setMessage('')
               if(fileInputRef.current){//clearing the file selector
                 console.log("current FIle input ref ; ")
@@ -416,7 +426,7 @@ console.log("Current LOGGED IN USER: ", user._id,user.name)
                         <input className="chat-input" type="text"
                                 id="text"
                                 value={message} 
-                                onChange={(e)=>{setMessage(e.target.value)}}
+                                onChange={(e)=>{setMessage(e.target.value);typingAllow &&socket.emit("isTyping",({userId:user._id,selectedUserId:selectedUser.id}));setTypingAllow(false)}}
                                 />
                     
                               <BsPaperclip className='paper-clip'/>
