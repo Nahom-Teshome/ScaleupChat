@@ -4,6 +4,8 @@ const Message = require('../models/message')
 const Room = require('../models/room')
 const jwt = require('jsonwebtoken')
 const cookie = require('cookie')
+const Subscription = require('../models/subscription')
+const webpush = require('web-push')
 const cloudinaryConfig = require("./cloudinary")
 const cloudinary = require('cloudinary').v2
 const {Transformation} = require("cloudinary")
@@ -151,13 +153,18 @@ module.exports =(socket,io,redisClient)=>{
             })
             
                 socket.on('sendMessage',async(data)=>{
-                        const {receiverId,content,senderId,file} = data
+                        const {receiverId,content,senderId,file,userName} = data
 
                         const {roomId} =data
                         
+                        
                         if(!roomId){// one to one messaging 
-                            // console.log("No roomId: receiverId: ",receiverId)
-                            // console.log('sent from frontend receiverId: ', receiverId)
+                            const payload = JSON.stringify({
+                                title: `New Message! from ${userName}`,
+                                body: content,
+                                
+                              });
+                            
                             //user exists?
                             const exists = await User.findOne({_id:receiverId})
 
@@ -179,14 +186,29 @@ module.exports =(socket,io,redisClient)=>{
                                     // console.log(socket.id,"user joined room: ",socket.rooms)
                                     //notify the receiver of the incoming message
                             socket.to(receiverId).emit('receiveMessage',message)
+                           
+                            const subscription= await Subscription.find({userId:receiverId}).sort({createdAt:-1}).limit(1)
+                            if(subscription){
+                                console.log("Subscription",subscription," for user: ",receiverId," exists:")
+                                subscription.map(async(sub)=>{
+                                    // console.log("subscription in webpush: ", sub)
+                                    await webpush.sendNotification(sub.subscription,payload)
+                                    .then(console.log("notification sent Successfully ! ",sub.subscription))
+                                    .catch(err=>{console.log("error sending Notification:",err)})
 
+                                })
+                            }
+                            else{
+                                console.log("Subscription",subscription," for user: ",receiverId," does not exists:")
+                            }
+                           
                         }
                         if(roomId){
-                            const groupExists = await Message.find({room_id:roomId})
-                        if(!groupExists){
-                            socket.emit('Error',`Group with id ${roomId} doesn't exists`)
-                            return
-                        }
+                        //     const groupExists = await Message.find({room_id:roomId})
+                        // if(!groupExists){
+                        //     socket.emit('Error',`Group with id ${roomId} doesn't exists`)
+                        //     return
+                        // }
                         const group = await Room.find({_id:roomId})
                         const message = await Message.create({room_id:roomId,sender_id:socket.user_id,content,files:file})// here we are sending the message, so that means the sender_id = the user_id from cookie token. we also need the sender_id to determine which side the message should be displayed on
                         
@@ -205,9 +227,32 @@ module.exports =(socket,io,redisClient)=>{
                                 }
                             } )
                           })
-                        //   console.log("groupMembers: ",groupMembers)
-                        //    groupExists.participants.map(member=>redisClient.hIncrBy(`unread-group-message ${roomId}`,member.id,1)) 
+                       
                         }
+                        const payload =JSON.stringify({
+                            title: `New Message! from ${group[0].room_name}`,
+                            body:content
+                        })
+                        group[0].participants.map(async participant=> {
+                            if(participant.id !== senderId)
+                            {
+                                    const subscription= await Subscription.find({userId:participant.id}).sort({createdAt:-1}).limit(1)
+                                if(subscription){
+                                    console.log("Subscription",subscription," for user: ",receiverId," exists:")
+                                    subscription.map(async(sub)=>{
+                                        // console.log("subscription in webpush: ", sub)
+                                        await webpush.sendNotification(sub.subscription,payload)
+                                        .then(console.log("notification sent Successfully ! ",sub.subscription))
+                                        .catch(err=>{console.log("error sending Notification:",err)})
+
+                                    })
+                                }
+                                else{
+                                    console.log("Subscription",subscription," for user: ",receiverId," does not exists:")
+                                }
+                            }
+                        })
+                        
                         socket.to(roomId).emit('receiveMessage',message)
                     }
                     

@@ -55,7 +55,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
   });
   React.useEffect(()=>{
     
-      console.log('subscription use effect')
+      // console.log('subscription use effect')
       // console.log("this is room Id: ")
       const handleReceiveMessage=(message)=>
         {//listen for event before the event is emitted
@@ -63,7 +63,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
               console.log("receiving messages that were sent from other users: ",message)
               const isRoomMessage = message.room_id !== 'client-to-client'&& message.room_id !== null
                
-              console.log("Message Received looking in cache: ",queryClient.getQueryData(['data',isRoomMessage?message.room_id :message.sender_id]))
+              // console.log("Message Received looking in cache: ",queryClient.getQueryData(['data',isRoomMessage?message.room_id :message.sender_id]))
               setReceivedMessage(message)
       
         }
@@ -74,7 +74,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
            
             setOldMessage('')
             if(!messageCache.current.has(key)){
-                console.log("doesn't exist in cache adding it",messageCache.current)
+                // console.log("doesn't exist in cache adding it",messageCache.current)
                 messageCache.current.set(key,message)
                 localStorage.setItem("messageData",JSON.stringify(messageCache.current))
             }
@@ -83,7 +83,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             }
             // setLoadMessage(messageCache.current.get(key))
             setLoadMessage(message)
-            console.log("localStorage: ", JSON.parse(localStorage.getItem("messageData")))
+            // console.log("localStorage: ", JSON.parse(localStorage.getItem("messageData")))
           }
         const handleLoadUserMessages =(message)=>{
           setOldMessage('')
@@ -122,7 +122,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
                 const {clientHeight, scrollTop, scrollHeight} = scrollRef.current
                 if((Math.ceil(-scrollTop) +10 +clientHeight) >= (scrollHeight) && !loadingRef.current)
                   {// chatContainer now has access to the chat-wrapper div's scroll property
-                    console.log("Scrolled to the top!! pageCount: ",pageRef.current, "loading state: ",loadingRef.current )
+                    // console.log("Scrolled to the top!! pageCount: ",pageRef.current, "loading state: ",loadingRef.current )
                     loadingRef.current= true
                     
                      setOldMessageLoading(true)
@@ -137,7 +137,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
                newSocket.off('olderMessages')//detach previous event listener before attaching a new one below
                 await newSocket.on('olderMessages',(oldMessage)=>
                 {//event listener for old messages if triggered 
-                  console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",   loadingRef.current , "roomId: ",roomId)
+                  // console.log("olderMessages event triggered ,oldMessages: ",oldMessage, "pageCount: ",pageRef.current,"loading state: ",   loadingRef.current , "roomId: ",roomId)
                    loadingRef.current= false
                    setOldMessage(oldMessage)
                    setOldMessageLoading(false)
@@ -250,7 +250,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             if(socket && selectedUser.id)
             {
               setNewMessage(message)
-              socket.emit('sendMessage',{senderId:user._id,receiverId:selectedUser.id, content: message ,roomId,file:fileMessage?fileMessage:null})
+              socket.emit('sendMessage',{senderId:user._id,receiverId:selectedUser.id, content: message ,roomId,userName:user.name,file:fileMessage?fileMessage:null})
               socket.emit('clearTyping',({userId:user._id,selectedUserId:selectedUser.id}))
               setTypingAllow(true)
               setMessage('')
@@ -312,7 +312,7 @@ import {QueryClientContext, useQuery, useQueryClient   } from '@tanstack/react-q
             // console.log("Checking Screen Size in Chat")
             setIsMobile(screenSize)
           },[screenSize])
-console.log("Current LOGGED IN USER: ", user._id,user.name)
+// console.log("Current LOGGED IN USER: ", user._id,user.name)
        
   return (
         <div className="main-container">

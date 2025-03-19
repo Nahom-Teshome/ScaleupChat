@@ -40,8 +40,8 @@ export default function SocketContextProvider({children}){
                 // console.log("SocketContext newSocket: ",newSocket)
                 dispatch({type:'CONNECT',payload:newSocket})
                 newSocket.on('connect',()=>{
-                    user && console.log("user id from socketContext: ",user._id)
-                    console.log("Initial Connect with socket.id: ", newSocket.id,)
+                    // user && console.log("user id from socketContext: ",user._id)
+                    // console.log("Initial Connect with socket.id: ", newSocket.id,)
                 })
                 
                 setLocalSocket(newSocket)
@@ -54,7 +54,7 @@ export default function SocketContextProvider({children}){
         }
        if(user)
        {
-           console.log(`user : ${user?.name} is present , connecting to websocket`)
+        //    console.log(`user : ${user?.name} is present , connecting to websocket`)
            connect()
         }
        
@@ -68,19 +68,13 @@ export default function SocketContextProvider({children}){
     console.log("Disconnected from server. Reason:", reason);
   });
     useEffect(()=>{
-        console.log("OnlineUsers useEffect fire: ",localSocket?.id)
+        // console.log("OnlineUsers useEffect fire: ",localSocket?.id)
         const handleOnlineListener =(arg)=>
             {
-                console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id,"socket.id: ",localSocket?.id, "SOCKET SET STATE: ",socketSet)
+                // console.log('New list of online users from socketContext: ',arg,"and current user: ",user?.id,"socket.id: ",localSocket?.id, "SOCKET SET STATE: ",socketSet)
                 dispatch({type:'ADD_ONLINE_USER', payload:arg})
             }
-            const handleReceiveMessage=(message)=>
-                {//listen for event before the event is emitted
-                
-                      console.log("receiving messages that were sent from other users: ",message)
-                }
         const addOnlineUser=()=>{
-               localSocket.on('receiveMessage', handleReceiveMessage)
                localSocket.on('online',handleOnlineListener)
                 user&& localSocket.emit('userOnline',(user._id))
             }

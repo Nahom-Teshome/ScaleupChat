@@ -91,7 +91,7 @@ const negative = false//used for forcing conditions not to run
     React.useEffect(()=>{
     //   ||last.sender_id===user._id && last.receiver_id ===selectedUser
         if(receivedMessage ){
-console.log("Received Message in getusers")
+// console.log("Received Message in getusers")
           lastMessage? setLastMessages((prev)=>{
             const newLastMessage =prev.map(last =>{
             
@@ -114,11 +114,11 @@ console.log("Received Message in getusers")
                 // console.log(`user._id ${user._id} !== receivedMessage.sender_id${receivedMessage.sender_id}`,user._id !== receivedMessage.sender_id)
                 newList.push(user)
             }
-            console.log("topUser: ",topUser," newList: ",newList, " i ",i, "user length: ", prev.length)
+            // console.log("topUser: ",topUser," newList: ",newList, " i ",i, "user length: ", prev.length)
           
             
         })
-        console.log("top",[...topUser,...newList])
+        // console.log("top",[...topUser,...newList])
     return [...topUser,...newList]
     })
     // console.log("last message update receive messages: ",receivedMessage,)
@@ -150,7 +150,7 @@ console.log("Received Message in getusers")
            if( receivedMessage && (receivedMessage.room_id === null || receivedMessage.room_id === 'client-to-client'))
            {
                setUnreadMessages(prev =>{
-                   console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
+                //    console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
                   return receivedMessage.sender_id!== selectedUser ?[...prev, receivedMessage]:[...prev]
                 })
            }
@@ -159,18 +159,18 @@ console.log("Received Message in getusers")
       },[receivedMessage])
       React.useEffect(()=>{
         socket.on("unreadMessage",(unreadMessages)=>{
-            console.log("unreadMessages in get user: ",unreadMessages)
+            // console.log("unreadMessages in get user: ",unreadMessages)
             setUnreadMessages(unreadMessages)
         })
       },[])
       React.useEffect(()=>{
-        console.log("typing useEffect listeners attached")
+        // console.log("typing useEffect listeners attached")
         socket.on("typing",(typingUser)=>{
-            console.log("user: ",typingUser," is typing ")
+            // console.log("user: ",typingUser," is typing ")
             setTyping(prev=> ([...prev,typingUser]))
         })
         socket.on("stopTyping",(typingUser)=>{
-            console.log("user: ", typingUser, " has stopped typing")
+            // console.log("user: ", typingUser, " has stopped typing")
             setTyping(prev=>{
               return  prev.filter(id => id !== typingUser)
             })
@@ -180,7 +180,7 @@ console.log("Received Message in getusers")
       
        unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
          const newUnread= prev.filter(unread=> unread.sender_id !== id )
-         console.log("newUnread messages in prev : ",newUnread)
+        //  console.log("newUnread messages in prev : ",newUnread)
          socket.emit("clearUnread",(id))
          return newUnread
        }):  console.log("newUnread messages in prev could not be displayed as unreadMessages doesn't have value: ",unreadMessages)

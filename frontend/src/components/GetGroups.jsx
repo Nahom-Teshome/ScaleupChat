@@ -128,14 +128,14 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
                   if( receivedMessage)
                   {
                       setUnreadMessages(prev =>{
-                          console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
+                        //   console.log("reading receivedMessages in unread useEffect: " , receivedMessage)
                          return receivedMessage.room_id!== selectedGroup ?[...prev, receivedMessage]:[...prev]
                        })
                   }
                 },[receivedMessage])
                   React.useEffect(()=>{
                         socket.on("unreadMessage",(unreadMessages)=>{
-                            console.log("unreadMessages in get group: ",unreadMessages)
+                            // console.log("unreadMessages in get group: ",unreadMessages)
                             setUnreadMessages(unreadMessages)
                         })
                       },[])
@@ -143,7 +143,7 @@ export default function GetGroups({getRoomId,selectedGroup,isOnline,sentMessage,
       
                     unreadMessages || unreadMessages.lenght> 0 ?setUnreadMessages(prev=>{
                       const newUnread= prev.filter(unread=> unread.room_id !== id )
-                      console.log("newUnread messages in prev : ",newUnread)
+                    //   console.log("newUnread messages in prev : ",newUnread)
                       socket.emit("clearUnread",(id))
                       return newUnread
                     }):  console.log("newUnread messages in prev could not be displayed, as unreadMessages doesn't have value: ",unreadMessages)

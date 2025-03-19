@@ -1,5 +1,6 @@
 import React from 'react'
 import {Route,Navigate,BrowserRouter,Routes} from 'react-router-dom'
+import { registerServiceWorker,requestNotificationPermission } from './utils/notificationService'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
@@ -14,6 +15,25 @@ export default function App(){
     //    setLocalUser(localStorage.getItem('user'))
     //    console.log("localStorage user in APP.JSX: ", localStorage.getItem('user'))
     // },[])
+    React.useEffect(()=>{
+        console.log("User.name has changed setting up notification: ", user?.name)
+        async function setUpNotification (){
+            try{
+              const registration = await registerServiceWorker()
+              if(!registration){
+                throw new Error("registration was not successfull")
+              }
+                await requestNotificationPermission()
+            }
+            catch(err)
+            {
+                console.error("Error setting up Notification: ",err)
+            }
+        }
+        if(user){
+            setUpNotification()
+        }
+    },[user?.name])
     return(
         <BrowserRouter>
             <Routes>
