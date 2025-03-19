@@ -46,10 +46,10 @@ const  io = new Server(server,{
 })
 const client = createClient({
     username:'default',
-    password:"5UGA1BYaKFR8a1xCeylbICtA9OgB8j80",
+    password:process.env.REDIS_PASSWORD,
     socket:{
-        host:"redis-12483.c62.us-east-1-4.ec2.redns.redis-cloud.com",
-        port:12483
+        host:process.env.REDIS_HOST,
+        port:process.env.REDIS_PORT
     }
 })
 
